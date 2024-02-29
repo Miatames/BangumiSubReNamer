@@ -170,7 +170,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     }
                 }
 
-                Thread.Sleep(500);
+                // Thread.Sleep(500);
             });
 
             for (int i = SubFilePaths.Count - 1; i >= 0; i--)

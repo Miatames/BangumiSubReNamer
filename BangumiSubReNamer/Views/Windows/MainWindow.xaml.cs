@@ -8,11 +8,12 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.Views.Windows
 {
-    public partial class MainWindow : INavigationWindow
+    public partial class MainWindow : INavigationWindow, IRecipient<DataSnackbarMessage>
     {
         public MainWindowViewModel ViewModel { get; }
 
         private GlobalConfig globalConfig;
+        private readonly ISnackbarService snackbarService;
 
         public MainWindow(
             MainWindowViewModel viewModel,
@@ -29,10 +30,14 @@ namespace BangumiSubReNamer.Views.Windows
             SetPageService(pageService);
 
             navigationService.SetNavigationControl(RootNavigation);
-            
+
             Console.WriteLine("start");
 
             globalConfig = new GlobalConfig();
+            snackbarService = new SnackbarService();
+            snackbarService.SetSnackbarPresenter(UI_SnackbarPresenter);
+
+            WeakReferenceMessenger.Default.Register<DataSnackbarMessage>(this);
         }
 
         #region INavigationWindow methods
@@ -66,7 +71,12 @@ namespace BangumiSubReNamer.Views.Windows
 
         public void SetServiceProvider(IServiceProvider serviceProvider)
         {
-            
+        }
+
+        public void Receive(DataSnackbarMessage message)
+        {
+            snackbarService.Show(message.Title, message.Message, message.ControlAppearance, null,
+                TimeSpan.FromSeconds(2));
         }
     }
 }

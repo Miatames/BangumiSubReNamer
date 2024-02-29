@@ -31,6 +31,12 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 subFileExtensionRegex: SubFileExtensionRegex);
 
             GlobalConfig.Instance.ReNamerConfig = reNamerConfig;
+            
+            GlobalConfig.Instance.WriteConfig(reNamerConfig);
+
+            WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("更新设置",
+                $"{SubFileExtensions}  {SourceFileExtensions}  {DefaultAddFileExtensions}  {SubFileExtensionRegex}",
+                ControlAppearance.Success));
         }
 
         public void Receive(DataWindowSize message)
