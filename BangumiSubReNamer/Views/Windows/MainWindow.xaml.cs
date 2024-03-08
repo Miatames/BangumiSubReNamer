@@ -1,6 +1,9 @@
-﻿using BangumiSubReNamer.Models;
+﻿using System.IO;
+using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
+using BangumiSubReNamer.ViewModels.Pages;
 using BangumiSubReNamer.ViewModels.Windows;
+using BangumiSubReNamer.Views.Pages;
 using CommunityToolkit.Mvvm.Messaging;
 using Wpf.Ui;
 using Wpf.Ui.Appearance;
@@ -13,7 +16,14 @@ namespace BangumiSubReNamer.Views.Windows
         public MainWindowViewModel ViewModel { get; }
 
         private GlobalConfig globalConfig;
+        private BangumiApiConfig bangumiApiConfig;
         private readonly ISnackbarService snackbarService;
+        private StreamWriter consoleStreamWriter;
+
+        private MediaRenamerPage mediaRenamerPage;
+        private MediaDataPage mediaDataPage;
+        private SubRenamerPage subRenamerPage;
+        private SettingsPage settingsPage;
 
         public MainWindow(
             MainWindowViewModel viewModel,
@@ -28,14 +38,15 @@ namespace BangumiSubReNamer.Views.Windows
 
             InitializeComponent();
             SetPageService(pageService);
-
             navigationService.SetNavigationControl(RootNavigation);
 
             Console.WriteLine("start");
 
+            bangumiApiConfig = new BangumiApiConfig();
             globalConfig = new GlobalConfig();
             snackbarService = new SnackbarService();
             snackbarService.SetSnackbarPresenter(UI_SnackbarPresenter);
+            // CreateLogFile();
 
             WeakReferenceMessenger.Default.Register<DataSnackbarMessage>(this);
         }
@@ -61,6 +72,9 @@ namespace BangumiSubReNamer.Views.Windows
         {
             base.OnClosed(e);
 
+            // consoleStreamWriter.Flush();
+            // consoleStreamWriter.Close();
+
             Application.Current.Shutdown();
         }
 
@@ -69,14 +83,31 @@ namespace BangumiSubReNamer.Views.Windows
             return RootNavigation;
         }
 
-        public void SetServiceProvider(IServiceProvider serviceProvider)
-        {
-        }
+        public void SetServiceProvider(IServiceProvider serviceProvider) { }
 
         public void Receive(DataSnackbarMessage message)
         {
             snackbarService.Show(message.Title, message.Message, message.ControlAppearance, null,
                 TimeSpan.FromSeconds(2));
+        }
+
+        private void CreateLogFile()
+        {
+            var logFilePath = $"log\\log_{DateTime.Now.Date:yy-MM-dd}.txt";
+            Console.WriteLine(logFilePath);
+
+            if (!Directory.Exists("log")) Directory.CreateDirectory("log");
+            if (!File.Exists(logFilePath))
+            {
+                FileStream stream = new FileStream(logFilePath, FileMode.Create);
+                StreamWriter writer = new StreamWriter(stream);
+                writer.WriteLine(logFilePath);
+                writer.Close();
+                stream.Close();
+            }
+
+            consoleStreamWriter = new StreamWriter(logFilePath);
+            Console.SetOut(consoleStreamWriter);
         }
     }
 }

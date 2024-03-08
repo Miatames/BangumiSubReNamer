@@ -28,6 +28,8 @@
             <ui:TextBox Text="{Binding ViewModel.DefaultAddFileExtensions}" />
             <Label Margin="0,10,0,0" Content="字幕扩展名正则匹配排除:" />
             <ui:TextBox Text="{Binding ViewModel.SubFileExtensionRegex}" />
+            <Label Margin="0,10,0,0" Content="硬链接默认路径:" />
+            <ui:TextBox Text="{Binding ViewModel.OutFilePath}" />
             
             <ui:Button Content="保存设置"
                        HorizontalAlignment="Right"

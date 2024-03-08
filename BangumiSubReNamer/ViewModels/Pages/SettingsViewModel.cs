@@ -7,50 +7,46 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {
-    public partial class SettingsViewModel : ObservableObject, IRecipient<DataWindowSize>, INavigationAware
+    public partial class SettingsViewModel : ObservableObject, INavigationAware
     {
         public SettingsViewModel()
         {
-            WeakReferenceMessenger.Default.Register<DataWindowSize>(this);
+            Console.WriteLine("init SettingsViewModel");
         }
 
-        [ObservableProperty] private int height = 580;
-
-        [ObservableProperty] private string sourceFileExtensions;
-        [ObservableProperty] private string subFileExtensions;
+        [ObservableProperty] private string addSourceFileExtensionRegex;
+        [ObservableProperty] private string addSubFileExtensionRegex;
         [ObservableProperty] private string defaultAddFileExtensions;
         [ObservableProperty] private string subFileExtensionRegex;
+        [ObservableProperty] private string outFilePath;
 
         [RelayCommand]
         private void OnSetReNamerConfig()
         {
             var reNamerConfig = new DataReNamerConfig(
-                subFileExtensions: SubFileExtensions,
-                sourceFileExtensions: SourceFileExtensions,
+                addSubFileExtensionRegex: AddSubFileExtensionRegex,
+                addSourceFileExtensionRegex: AddSourceFileExtensionRegex,
                 defaultAddExtensions: DefaultAddFileExtensions,
                 subFileExtensionRegex: SubFileExtensionRegex);
 
             GlobalConfig.Instance.ReNamerConfig = reNamerConfig;
-            
-            GlobalConfig.Instance.WriteConfig(reNamerConfig);
+            GlobalConfig.Instance.OutFilePath = OutFilePath;
+            GlobalConfig.Instance.WriteConfig();
 
             WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("更新设置",
-                $"{SubFileExtensions}  {SourceFileExtensions}  {DefaultAddFileExtensions}  {SubFileExtensionRegex}",
+                $"{AddSubFileExtensionRegex}  {AddSourceFileExtensionRegex}  {DefaultAddFileExtensions}  {SubFileExtensionRegex}  {OutFilePath}",
                 ControlAppearance.Success));
         }
 
-        public void Receive(DataWindowSize message)
-        {
-            Height = message.Height - 70;
-        }
-
-
         public void OnNavigatedTo()
         {
-            SourceFileExtensions = GlobalConfig.Instance.ReNamerConfig.SourceFileExtensions;
-            SubFileExtensions = GlobalConfig.Instance.ReNamerConfig.SubFileExtensions;
+            AddSourceFileExtensionRegex = GlobalConfig.Instance.ReNamerConfig.AddSourceFileExtensionRegex;
+            AddSubFileExtensionRegex = GlobalConfig.Instance.ReNamerConfig.AddSubFileExtensionRegex;
             DefaultAddFileExtensions = GlobalConfig.Instance.ReNamerConfig.DefaultAddExtensions;
             SubFileExtensionRegex = GlobalConfig.Instance.ReNamerConfig.SubFileExtensionRegex;
+            OutFilePath = GlobalConfig.Instance.OutFilePath;
+            
+            // Height = GlobalConfig.Instance.Height - 70;
         }
 
         public void OnNavigatedFrom()

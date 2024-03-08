@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using BangumiSubReNamer.Models;
+using BangumiSubReNamer.Services;
 using BangumiSubReNamer.ViewModels.Pages;
 using BangumiSubReNamer.Views.Pages;
 using CommunityToolkit.Mvvm.Messaging;
@@ -18,9 +19,21 @@ namespace BangumiSubReNamer.ViewModels.Windows
         {
             new NavigationViewItem()
             {
+                Content = "元数据",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.DataUsage24 },
+                TargetPageType = typeof(Views.Pages.MediaRenamerPage)
+            },
+            new NavigationViewItem()
+            {
+                Content = "搜索",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Search24 },
+                TargetPageType = typeof(Views.Pages.MediaDataPage)
+            },
+            new NavigationViewItem()
+            {
                 Content = "重命名",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Rename24 },
-                TargetPageType = typeof(Views.Pages.RenamerPage)
+                TargetPageType = typeof(Views.Pages.SubRenamerPage)
             },
             new NavigationViewItem()
             {
@@ -31,9 +44,7 @@ namespace BangumiSubReNamer.ViewModels.Windows
         };
 
         [ObservableProperty] private ObservableCollection<object> _footerMenuItems = new()
-        {
-            
-        };
+            { };
 
         [ObservableProperty] private ObservableCollection<MenuItem> _trayMenuItems = new()
         {
@@ -42,9 +53,12 @@ namespace BangumiSubReNamer.ViewModels.Windows
 
         partial void OnHeightChanged(int value)
         {
-            Console.WriteLine($"window size change: {Width}--{Height}");
+             Console.WriteLine($"window size change: {Width}--{Height}");
 
-            WeakReferenceMessenger.Default.Send(new DataWindowSize(Width, Height));
+
+             GlobalConfig.Instance.Width = Width;
+             GlobalConfig.Instance.Height = Height;
+             WeakReferenceMessenger.Default.Send(new DataWindowSize(GlobalConfig.Instance.Width, GlobalConfig.Instance.Height));
         }
     }
 }

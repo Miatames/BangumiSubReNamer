@@ -36,10 +36,12 @@ namespace BangumiSubReNamer
                 services.AddSingleton<INavigationWindow, MainWindow>();
                 services.AddSingleton<MainWindowViewModel>();
 
-                services.AddSingleton<RenamerPage>();
-                services.AddSingleton<RenamerViewModel>();
-                // services.AddSingleton<DataPage>();
-                // services.AddSingleton<DataViewModel>();
+                services.AddSingleton<MediaRenamerPage>();
+                services.AddSingleton<MediaRenamerViewModel>();
+                services.AddSingleton<MediaDataPage>();
+                services.AddSingleton<MediaDataViewModel>();
+                services.AddSingleton<SubRenamerPage>();
+                services.AddSingleton<SubRenamerViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
             }).Build();

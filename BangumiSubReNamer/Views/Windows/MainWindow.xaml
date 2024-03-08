@@ -1,4 +1,5 @@
 ﻿<ui:FluentWindow
+    x:Name="UI_MainWindow"
     x:Class="BangumiSubReNamer.Views.Windows.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -22,6 +23,7 @@
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
+    ResizeMode="CanMinimize"
     mc:Ignorable="d">
 
     <Grid>
@@ -29,6 +31,8 @@
             x:Name="TitleBar"
             Title="{Binding ViewModel.ApplicationTitle}"
             Grid.Row="0"
+            CanMaximize="False"
+            ShowMaximize="False"
             CloseWindowByDoubleClickOnIcon="False">
             <ui:TitleBar.Icon>
                 <ui:ImageIcon Source="pack://application:,,,/Assets/wpfui-icon-256.png" />

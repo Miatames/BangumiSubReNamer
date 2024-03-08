@@ -7,17 +7,18 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.Views.Pages
 {
-    public partial class RenamerPage : INavigableView<RenamerViewModel>
+    public partial class SubRenamerPage : INavigableView<SubRenamerViewModel>
     {
-        public RenamerViewModel ViewModel { get; }
+        public SubRenamerViewModel ViewModel { get; }
 
-        public RenamerPage(RenamerViewModel viewModel)
+        public SubRenamerPage(SubRenamerViewModel viewModel)
         {
             ViewModel = viewModel;
             DataContext = this;
 
             InitializeComponent();
 
+            //恢复原样式 https://stackoverflow.com/questions/11581475/inherit-style-from-default-style/11581547#11581547
             Style itemContainerStyleSub = new Style(typeof(ListViewItem));
             itemContainerStyleSub.Setters.Add(new Setter(ListViewItem.AllowDropProperty, true));
             itemContainerStyleSub.Setters.Add(new EventSetter(ListViewItem.PreviewMouseLeftButtonDownEvent,
@@ -25,7 +26,7 @@ namespace BangumiSubReNamer.Views.Pages
             itemContainerStyleSub.Setters.Add(new EventSetter(ListViewItem.DropEvent,
                 new DragEventHandler(OnSubListItemDrag)));
             UI_SubFileList.ItemContainerStyle = itemContainerStyleSub;
-            
+
             Style itemContainerStyleSource = new Style(typeof(ListViewItem));
             itemContainerStyleSource.Setters.Add(new Setter(ListViewItem.AllowDropProperty, true));
             itemContainerStyleSource.Setters.Add(new EventSetter(ListViewItem.PreviewMouseLeftButtonDownEvent,
@@ -33,14 +34,9 @@ namespace BangumiSubReNamer.Views.Pages
             itemContainerStyleSource.Setters.Add(new EventSetter(ListViewItem.DropEvent,
                 new DragEventHandler(OnSourceListItemDrag)));
             UI_SourceFileList.ItemContainerStyle = itemContainerStyleSource;
-
-            InitUI();
+            
         }
 
-        private void InitUI()
-        {
-        }
-        
         private void OnSourceListItemDrag(object sender, DragEventArgs e)
         {
             DataFilePath? droppedDataFilePath = e.Data.GetData(typeof(DataFilePath)) as DataFilePath;

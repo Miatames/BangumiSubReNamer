@@ -48,9 +48,14 @@ namespace BangumiSubReNamer.Services
                 _navigationWindow = (
                     _serviceProvider.GetService(typeof(INavigationWindow)) as INavigationWindow
                 )!;
+                
                 _navigationWindow!.ShowWindow();
+                _navigationWindow.Navigate(typeof(Views.Pages.MediaDataPage));
+                _navigationWindow.Navigate(typeof(Views.Pages.SubRenamerPage));
+                _navigationWindow.Navigate(typeof(Views.Pages.SettingsPage));
+                
+                _navigationWindow.Navigate(typeof(Views.Pages.MediaRenamerPage));
 
-                _navigationWindow.Navigate(typeof(Views.Pages.RenamerPage));
             }
 
             await Task.CompletedTask;
