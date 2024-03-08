@@ -2,10 +2,10 @@
 
 public class DataReNamerConfig
 {
-     public DataReNamerConfig(string sourceFileExtensions, string subFileExtensions, string defaultAddExtensions, string subFileExtensionRegex)
+     public DataReNamerConfig(string addSourceFileExtensionRegex, string addSubFileExtensionRegex, string defaultAddExtensions, string subFileExtensionRegex)
      {
-          SourceFileExtensions = sourceFileExtensions;
-          SubFileExtensions = subFileExtensions;
+          AddSourceFileExtensionRegex = addSourceFileExtensionRegex;
+          AddSubFileExtensionRegex = addSubFileExtensionRegex;
           DefaultAddExtensions = defaultAddExtensions;
           SubFileExtensionRegex = subFileExtensionRegex;
      }
@@ -13,12 +13,12 @@ public class DataReNamerConfig
      /// <summary>
      /// 可拖入的扩展名
      /// </summary>
-     public string SourceFileExtensions { get; set;}
+     public string AddSourceFileExtensionRegex { get; set;}
 
      /// <summary>
      /// 可拖入的扩展名
      /// </summary>
-     public string SubFileExtensions { get; set; }
+     public string AddSubFileExtensionRegex { get; set; }
      
      /// <summary>
      /// 默认插入的扩展名

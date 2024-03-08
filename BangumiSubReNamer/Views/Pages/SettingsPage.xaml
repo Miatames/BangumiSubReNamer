@@ -16,14 +16,14 @@
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
 
-    <Grid Margin="5"
-          Height="{Binding ViewModel.Height,Mode=TwoWay}">
+    <Grid Margin="5">
+          <!-- Height="{Binding ViewModel.Height,Mode=TwoWay}"> -->
         <StackPanel Orientation="Vertical"
                     Margin="20">
-            <Label Margin="0,10,0,0" Content="视频文件扩展名:" />
-            <ui:TextBox Text="{Binding ViewModel.SourceFileExtensions}" />
-            <Label Margin="0,10,0,0" Content="字幕文件扩展名:" />
-            <ui:TextBox Text="{Binding ViewModel.SubFileExtensions}" />
+            <Label Margin="0,10,0,0" Content="视频文件扩展名正则匹配:" />
+            <ui:TextBox Text="{Binding ViewModel.AddSourceFileExtensionRegex}" />
+            <Label Margin="0,10,0,0" Content="字幕文件扩展名正则匹配:" />
+            <ui:TextBox Text="{Binding ViewModel.AddSubFileExtensionRegex}" />
             <Label Margin="0,10,0,0" Content="重命名扩展名:" />
             <ui:TextBox Text="{Binding ViewModel.DefaultAddFileExtensions}" />
             <Label Margin="0,10,0,0" Content="字幕扩展名正则匹配排除:" />

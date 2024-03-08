@@ -1,5 +1,6 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
+using System.Text.RegularExpressions;
 using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
 using CommunityToolkit.Mvvm.Messaging;
@@ -7,13 +8,16 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {
-    public partial class RenamerViewModel : ObservableObject, IRecipient<DataWindowSize>, INavigationAware
+    public partial class SubRenamerViewModel : ObservableObject, INavigationAware
+        , IRecipient<DataWindowSize>, IRecipient<DataFilePath>
     {
-        public RenamerViewModel()
+        public SubRenamerViewModel()
         {
             WeakReferenceMessenger.Default.Register<DataWindowSize>(this);
+
+            Console.WriteLine("init SubRenamerViewModel");
         }
-        
+
         [ObservableProperty] private bool isSelectByExtension = true;
         [ObservableProperty] private ObservableCollection<string> selectExtensions = new();
         [ObservableProperty] private int currentExtension = -1;
@@ -27,8 +31,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private Visibility isMovingProcess = Visibility.Hidden;
 
         private string subExtensionRegex = "";
-        private List<string> subFileEndsWithList = new();
-        private List<string> sourceFileEndsWithList = new();
+        private string subFileEndsRegex = "";
+        private string sourceFileEndsRegex = "";
 
 
         [RelayCommand]
@@ -60,12 +64,24 @@ namespace BangumiSubReNamer.ViewModels.Pages
             AddShowSubFile();
         }
 
+        public void RemoveFromSubList(string file)
+        {
+            foreach (var showSubFilePath in ShowSubFilePaths)
+            {
+                if (showSubFilePath.FileName == file)
+                {
+                    ShowSubFilePaths.Remove(showSubFilePath);
+                    break;
+                }
+            }
+        }
+
         public void AddDropFile(List<string> filePathArrayOrder)
         {
             foreach (var filePath in filePathArrayOrder)
             {
                 var addDataFilePath = new DataFilePath(filePath: filePath, fileName: Path.GetFileName(filePath));
-                if (filePath.EndsWithList(subFileEndsWithList))
+                if (Regex.IsMatch(Path.GetExtension(filePath), subFileEndsRegex))
                 {
                     SubFilePaths.AddUnique(addDataFilePath);
                     var addExtensionName = filePath.GetExtensionName(subExtensionRegex);
@@ -73,13 +89,15 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
                     if (CurrentExtension < 0) CurrentExtension = 0;
                 }
-                else if(filePath.EndsWithList(sourceFileEndsWithList))
+                else if (Regex.IsMatch(Path.GetExtension(filePath), sourceFileEndsRegex))
                 {
                     SourceFilePaths.AddUnique(addDataFilePath);
                 }
                 else
                 {
                     Console.WriteLine($"unknow add file: {filePath}");
+                    WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
+                        new DataSnackbarMessage("未知文件类型" + Path.GetExtension(filePath), filePath, ControlAppearance.Caution));
                 }
             }
 
@@ -133,26 +151,25 @@ namespace BangumiSubReNamer.ViewModels.Pages
         private async void OnDoReName()
         {
             Console.WriteLine($"current add extension: [{SelectAddExtension}]");
-            if (ShowSubFilePaths.Count != SourceFilePaths.Count || ShowSubFilePaths.Count <= 0)
+            if (ShowSubFilePaths.Count <= 0)
             {
                 return;
             }
-            
+
             IsMovingProcess = Visibility.Visible;
             await Task.Run(() =>
             {
-                for (int i = 0; i < ShowSubFilePaths.Count; i++)
+                for (int i = 0; i < Math.Min(ShowSubFilePaths.Count, SourceFilePaths.Count); i++)
                 {
+                    if (!File.Exists(ShowSubFilePaths[i].FilePath)) continue;
                     if (IsMoveFile)
                     {
                         var newPath = Path.GetDirectoryName(SourceFilePaths[i].FilePath);
                         var subFileName = Path.GetFileNameWithoutExtension(SourceFilePaths[i].FilePath);
-                        var newFile = newPath + "\\" + subFileName + SelectAddExtension + Path.GetExtension(ShowSubFilePaths[i].FilePath);
+                        var newFile = newPath + "\\" + subFileName + SelectAddExtension +
+                                      Path.GetExtension(ShowSubFilePaths[i].FilePath);
 
-                        if (!File.Exists(newFile))
-                        {
-                            File.Copy(ShowSubFilePaths[i].FilePath, newFile);
-                        }
+                        File.Copy(ShowSubFilePaths[i].FilePath, newFile, true);
 
                         Console.WriteLine(newFile);
                     }
@@ -160,11 +177,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     {
                         var newPath = Path.GetDirectoryName(ShowSubFilePaths[i].FilePath);
                         var subFileName = Path.GetFileNameWithoutExtension(SourceFilePaths[i].FilePath);
-                        var newFile = newPath + "\\" + subFileName + SelectAddExtension + Path.GetExtension(ShowSubFilePaths[i].FilePath);
-                        if (!File.Exists(newFile))
-                        {
-                            File.Move(ShowSubFilePaths[i].FilePath, newFile);
-                        }
+                        var newFile = newPath + "\\" + subFileName + SelectAddExtension +
+                                      Path.GetExtension(ShowSubFilePaths[i].FilePath);
+                        
+                        File.Move(ShowSubFilePaths[i].FilePath, newFile, true);
 
                         Console.WriteLine(newFile);
                     }
@@ -190,6 +206,11 @@ namespace BangumiSubReNamer.ViewModels.Pages
             Height = message.Height - 70;
         }
 
+        public void Receive(DataFilePath message)
+        {
+            ShowSubFilePaths.Add(message);
+        }
+
         partial void OnSelectAddExtensionChanged(string value)
         {
             Console.WriteLine($"add extension: [{SelectAddExtension}]");
@@ -198,16 +219,14 @@ namespace BangumiSubReNamer.ViewModels.Pages
         public void OnNavigatedTo()
         {
             AddExtensions = GlobalConfig.Instance.ReNamerConfig.DefaultAddExtensions.ConvertToObservableCollection();
-            subFileEndsWithList = GlobalConfig.Instance.ReNamerConfig.SubFileExtensions.ConvertToList();
-            sourceFileEndsWithList = GlobalConfig.Instance.ReNamerConfig.SourceFileExtensions.ConvertToList();
+            subFileEndsRegex = GlobalConfig.Instance.ReNamerConfig.AddSubFileExtensionRegex;
+            sourceFileEndsRegex = GlobalConfig.Instance.ReNamerConfig.AddSourceFileExtensionRegex;
             subExtensionRegex = GlobalConfig.Instance.ReNamerConfig.SubFileExtensionRegex;
-            
-            IsMovingProcess = Visibility.Hidden;
+
+            // IsMovingProcess = Visibility.Hidden;
+            Height = GlobalConfig.Instance.Height - 70;
         }
 
-        public void OnNavigatedFrom()
-        {
-            
-        }
+        public void OnNavigatedFrom() { }
     }
 }
