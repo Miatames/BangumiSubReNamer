@@ -190,14 +190,14 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         if (EpisodesInfoList[i].Type == 0)
                         {
                             newName =
-                                $"{EpisodesInfoList[i].SubjectNameCn} - E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft,'0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
+                                $"{EpisodesInfoList[i].SubjectNameCn} - E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\Season 1\";
                         }
                         else
                         {
                             newName =
-                                $"{EpisodesInfoList[i].SubjectNameCn} - S0E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft,'0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
+                                $"{EpisodesInfoList[i].SubjectNameCn} - S0E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\SP\";
                         }
@@ -334,11 +334,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 {
                     Console.WriteLine(e);
                 }
-
             }
 
             WeakReferenceMessenger.Default.Send<DataSearchStrMessage>(new DataSearchStrMessage(title));
-            
+
             CreateNewFileList();
         }
 
@@ -356,8 +355,16 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
                     if (!Directory.Exists(targetPath))
                     {
-                        Directory.CreateDirectory(targetPath);
-                        Console.WriteLine("create: " + targetPath);
+                        try
+                        {
+                            Directory.CreateDirectory(targetPath);
+                            Console.WriteLine("create: " + targetPath);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            break;
+                        }
                     }
 
                     if (IsAddNfoFile && !File.Exists(Path.GetDirectoryName(targetPath) + @"\tvshow.nfo"))
@@ -423,8 +430,16 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     if (targetPath == null) continue;
                     if (!Directory.Exists(targetPath))
                     {
-                        Directory.CreateDirectory(targetPath);
-                        Console.WriteLine("create: " + targetPath);
+                        try
+                        {
+                            Directory.CreateDirectory(targetPath);
+                            Console.WriteLine("create: " + targetPath);
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                            break;
+                        }
                     }
 
                     if (IsAddNfoFile && !File.Exists(Path.GetDirectoryName(targetPath) + @"\tvshow.nfo"))

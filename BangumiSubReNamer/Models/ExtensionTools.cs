@@ -99,19 +99,30 @@ public static class ExtensionTools
 
     public static string RemoveInvalidFileNameChar(this string str)
     {
-        var invalidFileNameChar = Path.GetInvalidFileNameChars();
+        // var invalidFileNameChar = Path.GetInvalidFileNameChars();
+        // return invalidFileNameChar.Aggregate(str, (current, c) => current.Replace(c.ToString(), string.Empty));
 
-        return invalidFileNameChar.Aggregate(str, (current, c) => current.Replace(c.ToString(), string.Empty));
+        var invalidFileNameStr = @"[\\\/\^*×―$%~!@#$…&%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
+        return Regex.Replace(str, invalidFileNameStr, @" ");
     }
-    
+
     public static string RemoveInvalidPathNameChar(this string str)
     {
-        var invalidFileNameChar = Path.GetInvalidPathChars();
+        // var invalidPathChars = Path.GetInvalidPathChars();
+        // return invalidPathChars.Aggregate(str, (current, c) => current.Replace(c.ToString(), string.Empty));
 
-        return invalidFileNameChar.Aggregate(str, (current, c) => current.Replace(c.ToString(), string.Empty));
+        var rootpath = Path.GetPathRoot(str);
+        if (!string.IsNullOrEmpty(rootpath))
+        {
+            str = str.Replace(rootpath, "");
+        }
+
+        var invalidPathNameStr = @"[\^*×―$%~!@#$…&%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
+        var newStr = Regex.Replace(str, invalidPathNameStr, @" ");
+
+        return rootpath + newStr;
     }
 
     [DllImport("Kernel32", CharSet = CharSet.Unicode)]
     public static extern bool CreateHardLink(string linkName, string sourceName, IntPtr attribute);
 }
-
