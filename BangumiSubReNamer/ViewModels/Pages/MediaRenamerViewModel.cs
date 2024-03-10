@@ -402,9 +402,9 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         var episodesInfo = new NfoInfo_EpisodesRoot
                         {
                             bangumiid = EpisodesInfoList[i].Id.ToString(),
-                            title = EpisodesInfoList[i].Name,
-                            originaltitle = EpisodesInfoList[i].NameCn,
-                            showtitle = EpisodesInfoList[i].Name,
+                            title = EpisodesInfoList[i].NameCn,
+                            originaltitle = EpisodesInfoList[i].Name,
+                            showtitle = EpisodesInfoList[i].NameCn,
                             episode = EpisodesInfoList[i].Sort.ToString(),
                             season = "1"
                         };
@@ -477,9 +477,9 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         var episodesInfo = new NfoInfo_EpisodesRoot
                         {
                             bangumiid = EpisodesInfoList[i].Id.ToString(),
-                            title = EpisodesInfoList[i].Name,
-                            originaltitle = EpisodesInfoList[i].NameCn,
-                            showtitle = EpisodesInfoList[i].Name,
+                            title = EpisodesInfoList[i].NameCn,
+                            originaltitle = EpisodesInfoList[i].Name,
+                            showtitle = EpisodesInfoList[i].NameCn,
                             episode = EpisodesInfoList[i].Sort.ToString(),
                             season = "1"
                         };
@@ -521,9 +521,9 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         var episodesInfo = new NfoInfo_EpisodesRoot
                         {
                             bangumiid = EpisodesInfoList[i].Id.ToString(),
-                            title = EpisodesInfoList[i].Name,
-                            originaltitle = EpisodesInfoList[i].NameCn,
-                            showtitle = EpisodesInfoList[i].Name,
+                            title = EpisodesInfoList[i].NameCn,
+                            originaltitle = EpisodesInfoList[i].Name,
+                            showtitle = EpisodesInfoList[i].NameCn,
                             episode = EpisodesInfoList[i].Sort.ToString(),
                             season = "1"
                         };
