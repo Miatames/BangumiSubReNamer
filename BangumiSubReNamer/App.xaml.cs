@@ -35,6 +35,7 @@ namespace BangumiSubReNamer
 
                 services.AddSingleton<INavigationWindow, MainWindow>();
                 services.AddSingleton<MainWindowViewModel>();
+                services.AddSingleton<FilePreviewWindow>();
 
                 services.AddSingleton<MediaRenamerPage>();
                 services.AddSingleton<MediaRenamerViewModel>();

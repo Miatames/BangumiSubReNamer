@@ -16,12 +16,12 @@ public class BangumiApiConfig
     {
         Instance = this;
         client = new HttpClient();
+        client.DefaultRequestHeaders.Add("Accept", "application/json");
         client.DefaultRequestHeaders.Add("User-Agent",
-            "Miatames/BangumiSubReNamer (https://github.com/Miatames/BangumiSubReNamer)");
-        client.DefaultRequestHeaders.Add("Accept","application/json");
+            "BangumiSubReNamer/0.3.2 (https://github.com/Miatames/BangumiSubReNamer)");
     }
 
-    public async Task<List<string>> BangumiApi_Search(string keywords,bool getAllResults = false)
+    public async Task<List<string>> BangumiApi_Search(string keywords, bool getAllResults = false)
     {
         var results = new List<string>();
         if (keywords == "") return results;
@@ -31,12 +31,25 @@ public class BangumiApiConfig
         try
         {
             var result = await client.GetStringAsync(url);
+
+            if (result.StartsWith("<"))
+            {
+                return results;
+            }
+
+            using var document = JsonDocument.Parse(result);
+            var root = document.RootElement;
+
+            //请求出错直接返回
+            if (root.TryGetProperty("error", out _))
+            {
+                return results;
+            }
+
             results.Add(result);
 
             if (!getAllResults) return results;
 
-            using var document = JsonDocument.Parse(result);
-            var root = document.RootElement;
             if (root.TryGetProperty("results", out JsonElement maxCount))
             {
                 if (maxCount.GetInt32() >= 25)
@@ -46,12 +59,13 @@ public class BangumiApiConfig
                         var urlLoop =
                             $"{apiUrl}/search/subject/{WebUtility.UrlEncode(keywords)}?type=2&responseGroup=large&start={i * 25}&max_results=25";
                         Console.WriteLine("request: " + urlLoop);
-                            
+
                         var resultLoop = await client.GetStringAsync(urlLoop);
                         results.Add(resultLoop);
                     }
                 }
             }
+
             return results;
         }
         catch (Exception e)

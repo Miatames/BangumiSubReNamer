@@ -17,7 +17,7 @@
     ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
     mc:Ignorable="d">
-    
+
     <Grid>
         <Grid Margin="5"
               Height="{Binding ViewModel.Height,Mode=TwoWay}"
@@ -61,7 +61,7 @@
                     </ListView.ItemTemplate>
                 </ListView>
             </Border>
-            <StackPanel Grid.ColumnSpan="2" Grid.Row="1"
+            <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="5">
@@ -76,13 +76,18 @@
                           IsEditable="False"
                           Margin="5,0"
                           MinWidth="150" />
+                <ui:Button
+                    Content="预览"
+                    Width="120" Height="32" Margin="5,0"
+                    Command="{Binding ViewModel.NavigateToPreviewWindowCommand}"/>
                 <ui:Button x:Name="UI_ClearButton"
                            Content="清除"
                            Width="120" Height="32" Margin="5,0"
                            Command="{Binding ViewModel.ClearAllCommand}"
-                           Appearance="Primary" />
+                           Icon="{ui:SymbolIcon Delete32}"
+                           Appearance="Caution" />
             </StackPanel>
-            <StackPanel Grid.ColumnSpan="2" Grid.Row="2"
+            <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="2"
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="5">

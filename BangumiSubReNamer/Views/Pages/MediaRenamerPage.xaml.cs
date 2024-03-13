@@ -33,9 +33,7 @@ namespace BangumiSubReNamer.Views.Pages
             itemContainerStyleSource.Setters.Add(new EventSetter(ListViewItem.DropEvent,
                 new DragEventHandler(OnSourceListItemDrag)));
             UI_SourceFileList.ItemContainerStyle = itemContainerStyleSource;
-
-            Style itemContainerStyleNew = new Style(typeof(ListViewItem));
-            UI_NewFileList.ItemContainerStyle = itemContainerStyleNew;
+            
         }
 
         private void OnSourceListItemDrag(object sender, DragEventArgs e)

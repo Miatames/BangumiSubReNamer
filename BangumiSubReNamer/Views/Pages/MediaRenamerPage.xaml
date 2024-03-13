@@ -35,7 +35,6 @@
                     Padding="5"
                     CornerRadius="5"
                     BorderBrush="{ui:ThemeResource AccentTextFillColorDisabledBrush}"
-                    Visibility="{Binding ViewModel.IsSourceFileList}"
                     BorderThickness="1">
                 <ListView x:Name="UI_SourceFileList"
                           ItemsSource="{Binding ViewModel.SourceFileList}">
@@ -58,7 +57,6 @@
                     Padding="5"
                     CornerRadius="5"
                     BorderBrush="{ui:ThemeResource AccentTextFillColorDisabledBrush}"
-                    Visibility="{Binding ViewModel.IsSourceFileList}"
                     BorderThickness="1">
                 <ListView x:Name="UI_EpisodesInfoList"
                           ItemsSource="{Binding ViewModel.EpisodesInfoList}">
@@ -76,7 +74,7 @@
                     </ListView.ContextMenu>
                 </ListView>
             </Border>
-            <Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
+            <!--<Border Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2"
                     Margin="3"
                     Padding="5"
                     CornerRadius="5"
@@ -101,7 +99,7 @@
                         </ContextMenu>
                     </ListView.ContextMenu>
                 </ListView>
-            </Border>
+            </Border>-->
 
             <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1"
                         Orientation="Horizontal"
@@ -119,12 +117,17 @@
                            Content="搜索"
                            Width="120" Height="32" Margin="5,0"
                            Command="{Binding ViewModel.SearchCommand}"
-                           Appearance="Primary" />
+                           Appearance="Light" />
+                <ui:Button
+                    Content="预览"
+                    Width="120" Height="32" Margin="5,0"
+                    Command="{Binding ViewModel.NavigateToPreviewWindowCommand}" />
                 <ui:Button x:Name="UI_ClearButton"
                            Content="清除"
                            Width="120" Height="32" Margin="5,0"
                            Command="{Binding ViewModel.ClearAllCommand}"
-                           Appearance="Primary" />
+                           Icon="{ui:SymbolIcon Delete32}"
+                           Appearance="Caution" />
             </StackPanel>
             <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="2"
                         Orientation="Horizontal"
@@ -142,10 +145,6 @@
                     <ComboBoxItem Content="复制" />
                     <ComboBoxItem Content="重命名" />
                 </ComboBox>
-                <ToggleButton
-                    Content="预览"
-                    Width="120" Height="32" Margin="5,0"
-                    IsChecked="{Binding ViewModel.IsNewFileListChecked,Mode=TwoWay}"/>
                 <ui:Button x:Name="UI_FileOperateButton"
                            Content="开始"
                            Width="120" Height="32" Margin="5,0"
@@ -158,6 +157,11 @@
               Visibility="{Binding ViewModel.IsProcess,Mode=TwoWay}"
               d:IsHidden="True">
             <ui:ProgressRing IsIndeterminate="True" />
+            <TextBlock Text="{Binding ViewModel.ProcessText}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="{ui:ThemeResource AccentTextFillColorDisabledBrush}"
+                       Margin="0,100,0,0" />
         </Grid>
     </Grid>
 </Page>

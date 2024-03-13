@@ -25,9 +25,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
         [ObservableProperty] private int height = 580;
         [ObservableProperty] private Visibility isProcess = Visibility.Hidden;
-        [ObservableProperty] private bool isNewFileListChecked = false;
-        [ObservableProperty] private Visibility isSourceFileList = Visibility.Visible;
-        [ObservableProperty] private Visibility isNewFileList = Visibility.Hidden;
         [ObservableProperty] private ObservableCollection<DataFilePath> sourceFileList = new();
         [ObservableProperty] private ObservableCollection<DataEpisodesInfo> episodesInfoList = new();
         [ObservableProperty] private ObservableCollection<DataFilePath> newFileList = new();
@@ -35,6 +32,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private bool isAddNfoFile = true;
         [ObservableProperty] private int currentSearchMode = 0;
         [ObservableProperty] private int currentFileOperateMode = 0;
+        [ObservableProperty] private string processText = "";
 
         private string sourceFileEndsRegex = "";
         private string subFileEndsRegex = "";
@@ -56,23 +54,20 @@ namespace BangumiSubReNamer.ViewModels.Pages
             CreateNewFileList();
         }
 
-        partial void OnIsNewFileListCheckedChanged(bool value)
-        {
-            if (value)
-            {
-                IsSourceFileList = Visibility.Hidden;
-                IsNewFileList = Visibility.Visible;
-            }
-            else
-            {
-                IsSourceFileList = Visibility.Visible;
-                IsNewFileList = Visibility.Hidden;
-            }
-        }
-
         partial void OnCurrentSearchModeChanged(int value)
         {
             CreateNewFileList();
+        }
+
+        [RelayCommand]
+        private void OnNavigateToPreviewWindow()
+        {
+            CreateNewFileList();
+            
+            WeakReferenceMessenger.Default.Send<DataFilePathPreview>(new DataFilePathPreview()
+            {
+                fileList = NewFileList.ToList()
+            });
         }
 
         [RelayCommand]
@@ -100,7 +95,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             }
                             else
                             {
-                                searchStrList.AddUnique(element.Value);
+                                searchStrList.AddUnique(element.Value.RemoveInvalidFileNameChar());
                                 break;
                             }
                         case "ElementEpisodeNumber":
@@ -118,12 +113,17 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 {
                     //使用BangumiApi搜素剧集信息，英文名可能搜不出
                     var results = await BangumiApiConfig.Instance.BangumiApi_Search(searchStr);
-                    if (results.Count <= 0) continue;
+                    if (results == null || results.Count <= 0)
+                    {
+                        WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(new DataSnackbarMessage("搜索无结果",
+                            $"搜索：{searchStr}",
+                            ControlAppearance.Caution));
+                        continue;
+                    }
 
                     //默认获取第一条
                     var jsonSubjects = JsonSerializer.Deserialize<BgmApiJson_Search>(results[0]);
-                    if (jsonSubjects == null) continue;
-                    if (jsonSubjects.list.Count <= 0)
+                    if (jsonSubjects == null || jsonSubjects.list.Count <= 0)
                     {
                         WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(new DataSnackbarMessage("搜索无结果",
                             $"搜索：{searchStr}",
@@ -255,6 +255,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             Console.WriteLine("类型" + CurrentFileOperateMode);
 
             IsProcess = Visibility.Visible;
+            ProcessText = "";
             switch (CurrentFileOperateMode)
             {
                 case 0:
@@ -270,6 +271,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     break;
             }
 
+            ProcessText = "";
             IsProcess = Visibility.Hidden;
         }
 
@@ -279,7 +281,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
             // IsProcess = Visibility.Hidden;
             sourceFileEndsRegex = GlobalConfig.Instance.ReNamerConfig.AddSourceFileExtensionRegex;
             subFileEndsRegex = GlobalConfig.Instance.ReNamerConfig.AddSubFileExtensionRegex;
-            IsNewFileListChecked = false;
             Height = GlobalConfig.Instance.Height - 70;
         }
 
@@ -326,7 +327,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         if (element.Category.ToString() == "ElementAnimeTitle")
                         {
                             Console.WriteLine(element.Value);
-                            title = element.Value;
+                            title = element.Value.RemoveInvalidFileNameChar();
                         }
                     }
                 }
@@ -344,9 +345,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
         private async Task RunHardLinkFiles()
         {
             var msg = "";
+            var count = Math.Min(Math.Min(SourceFileList.Count, EpisodesInfoList.Count), NewFileList.Count);
             await Task.Run(() =>
             {
-                for (int i = 0; i < Math.Min(Math.Min(SourceFileList.Count, EpisodesInfoList.Count), NewFileList.Count); i++)
+                for (int i = 0; i < count; i++)
                 {
                     if (!File.Exists(SourceFileList[i].FilePath)) continue;
 
@@ -390,6 +392,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     try
                     {
                         ExtensionTools.CreateHardLink(NewFileList[i].FilePath, SourceFileList[i].FilePath, IntPtr.Zero);
+                        ProcessText = $"{i}/{count}";
                         msg += NewFileList[i].FilePath + "\n";
                     }
                     catch (Exception e)
@@ -421,6 +424,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         private async Task RunCopyFiles()
         {
             var msg = "";
+            var count = Math.Min(Math.Min(SourceFileList.Count, EpisodesInfoList.Count), NewFileList.Count);
             await Task.Run(() =>
             {
                 for (int i = 0; i < Math.Min(Math.Min(SourceFileList.Count, EpisodesInfoList.Count), NewFileList.Count); i++)
@@ -465,6 +469,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     try
                     {
                         File.Copy(SourceFileList[i].FilePath, NewFileList[i].FilePath, true);
+                        ProcessText = $"{i}/{count}";
                         msg += NewFileList[i].FilePath + "\n";
                     }
                     catch (Exception e)
@@ -496,6 +501,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         private async Task RunRenameFiles()
         {
             var msg = "";
+            var count = Math.Min(Math.Min(SourceFileList.Count, EpisodesInfoList.Count), NewFileList.Count);
             await Task.Run(() =>
             {
                 for (int i = 0; i < Math.Min(Math.Min(SourceFileList.Count, EpisodesInfoList.Count), NewFileList.Count); i++)
@@ -509,6 +515,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     try
                     {
                         File.Move(SourceFileList[i].FilePath, newPath);
+                        ProcessText = $"{i}/{count}";
                         msg += NewFileList[i].FilePath + "\n";
                     }
                     catch (Exception e)

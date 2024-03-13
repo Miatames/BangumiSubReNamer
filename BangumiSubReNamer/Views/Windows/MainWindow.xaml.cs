@@ -11,9 +11,10 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.Views.Windows
 {
-    public partial class MainWindow : INavigationWindow, IRecipient<DataSnackbarMessage>
+    public partial class MainWindow : INavigationWindow, IRecipient<DataSnackbarMessage>,IRecipient<DataFilePathPreview>
     {
         public MainWindowViewModel ViewModel { get; }
+        public static MainWindow Instance; 
 
         private GlobalConfig globalConfig;
         private BangumiApiConfig bangumiApiConfig;
@@ -31,6 +32,7 @@ namespace BangumiSubReNamer.Views.Windows
             INavigationService navigationService
         )
         {
+            Instance = this;
             ViewModel = viewModel;
             DataContext = this;
 
@@ -49,6 +51,7 @@ namespace BangumiSubReNamer.Views.Windows
             // CreateLogFile();
 
             WeakReferenceMessenger.Default.Register<DataSnackbarMessage>(this);
+            WeakReferenceMessenger.Default.Register<DataFilePathPreview>(this);
         }
 
         #region INavigationWindow methods
@@ -108,6 +111,16 @@ namespace BangumiSubReNamer.Views.Windows
 
             consoleStreamWriter = new StreamWriter(logFilePath);
             Console.SetOut(consoleStreamWriter);
+        }
+
+        public void Receive(DataFilePathPreview message)
+        {
+            var window = new FilePreviewWindow(new FilePreviewWindowViewModel(message))
+            {
+                Owner = this,
+                ShowInTaskbar = false
+            };
+            window.ShowDialog();
         }
     }
 }

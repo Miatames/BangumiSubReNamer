@@ -21,6 +21,7 @@ public class DataEpisodesInfo
         Id = id;
         Name = name;
         NameCn = nameCn;
+        SubjectName = subjectName;
         SubjectNameCn = subjectNameCn;
         Ep = ep;
         Sort = sort;

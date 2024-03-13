@@ -14,6 +14,7 @@ public class BgmApiJson_SearchListItem
     public string name { get; set; }
     public string name_cn { get; set; }
     public float eps_count { get; set; }
+    public string summary { get; set; }
     public string air_date { get; set; }
 }
 
