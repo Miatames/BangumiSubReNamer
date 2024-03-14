@@ -63,7 +63,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         private void OnNavigateToPreviewWindow()
         {
             CreateNewFileList();
-            
+
             WeakReferenceMessenger.Default.Send<DataFilePathPreview>(new DataFilePathPreview()
             {
                 fileList = NewFileList.ToList()
@@ -190,7 +190,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         if (EpisodesInfoList[i].Type == 0)
                         {
                             newName =
-                                $"{EpisodesInfoList[i].SubjectNameCn} - E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
+                                $"{EpisodesInfoList[i].SubjectNameCn} - S1E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\Season 1\";
                         }
@@ -409,7 +409,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             originaltitle = EpisodesInfoList[i].Name,
                             showtitle = EpisodesInfoList[i].NameCn,
                             episode = EpisodesInfoList[i].Sort.ToString(),
-                            season = "1"
+                            season = EpisodesInfoList[i].Type == 0 ? "1" : "0"
                         };
                         RunCreateNfoFileEpisodes(episodesInfo,
                             Path.GetDirectoryName(NewFileList[i].FilePath) + @"\" +
@@ -486,7 +486,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             originaltitle = EpisodesInfoList[i].Name,
                             showtitle = EpisodesInfoList[i].NameCn,
                             episode = EpisodesInfoList[i].Sort.ToString(),
-                            season = "1"
+                            season = EpisodesInfoList[i].Type == 0 ? "1" : "0"
                         };
                         RunCreateNfoFileEpisodes(episodesInfo,
                             Path.GetDirectoryName(NewFileList[i].FilePath) + @"\" +
@@ -532,7 +532,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             originaltitle = EpisodesInfoList[i].Name,
                             showtitle = EpisodesInfoList[i].NameCn,
                             episode = EpisodesInfoList[i].Sort.ToString(),
-                            season = "1"
+                            season = EpisodesInfoList[i].Type == 0 ? "1" : "0"
                         };
                         RunCreateNfoFileEpisodes(episodesInfo,
                             Path.GetDirectoryName(SourceFileList[i].FilePath) + @"\" +
