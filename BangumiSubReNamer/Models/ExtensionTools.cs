@@ -125,4 +125,7 @@ public static class ExtensionTools
 
     [DllImport("Kernel32", CharSet = CharSet.Unicode)]
     public static extern bool CreateHardLink(string linkName, string sourceName, IntPtr attribute);
+    
+    [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
+    public static extern int StrCmpLogicalW(string psz1, string psz2);
 }

@@ -121,17 +121,15 @@ namespace BangumiSubReNamer.Views.Pages
                     Console.WriteLine($"unknow file: {file}");
                 }
             }
-
-            var filePathArrayOrder = from file in filePathArray
-                orderby file
-                select file;
-
-            foreach (var s in filePathArrayOrder)
+            
+            filePathArray.Sort(ExtensionTools.StrCmpLogicalW);
+                
+            foreach (var s in filePathArray)
             {
                 Console.WriteLine(s);
             }
 
-            ViewModel.AddDropFile(filePathArrayOrder.ToList());
+            ViewModel.AddDropFile(filePathArray.ToList());
         }
     }
 }
