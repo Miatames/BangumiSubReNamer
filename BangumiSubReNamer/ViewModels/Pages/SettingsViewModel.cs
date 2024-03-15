@@ -23,6 +23,15 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [RelayCommand]
         private void OnSetReNamerConfig()
         {
+            if (OutFilePath != @"{RootPath}" && !OutFilePath.EndsWith(@"\"))
+            {
+                OutFilePath += @"\";
+            }
+            else if (OutFilePath.StartsWith(@"{RootPath}\"))
+            {
+                OutFilePath.Replace(@"{RootPath}\", @"{RootPath}");
+            }
+
             var reNamerConfig = new DataReNamerConfig(
                 addSubFileExtensionRegex: AddSubFileExtensionRegex,
                 addSourceFileExtensionRegex: AddSourceFileExtensionRegex,
@@ -34,7 +43,11 @@ namespace BangumiSubReNamer.ViewModels.Pages
             GlobalConfig.Instance.WriteConfig();
 
             WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("更新设置",
-                $"{AddSubFileExtensionRegex}  {AddSourceFileExtensionRegex}  {DefaultAddFileExtensions}  {SubFileExtensionRegex}  {OutFilePath}",
+                AddSubFileExtensionRegex + "\n" +
+                AddSourceFileExtensionRegex + "\n" +
+                DefaultAddFileExtensions + "\n" +
+                SubFileExtensionRegex + "\n" +
+                OutFilePath,
                 ControlAppearance.Success));
         }
 
@@ -45,12 +58,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
             DefaultAddFileExtensions = GlobalConfig.Instance.ReNamerConfig.DefaultAddExtensions;
             SubFileExtensionRegex = GlobalConfig.Instance.ReNamerConfig.SubFileExtensionRegex;
             OutFilePath = GlobalConfig.Instance.OutFilePath;
-            
+
             // Height = GlobalConfig.Instance.Height - 70;
         }
 
-        public void OnNavigatedFrom()
-        {
-        }
+        public void OnNavigatedFrom() { }
     }
 }
