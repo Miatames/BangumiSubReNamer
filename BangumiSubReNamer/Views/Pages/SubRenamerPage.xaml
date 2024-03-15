@@ -7,7 +7,8 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
     xmlns:models="clr-namespace:BangumiSubReNamer.Models"
-    xmlns:system="clr-namespace:System;assembly=System.Runtime"
+    xmlns:dd="urn:gong-wpf-dragdrop"
+    xmlns:behaviors="http://schemas.microsoft.com/xaml/behaviors"
     Title="SubRenamerPage"
     d:DataContext="{d:DesignInstance local:SubRenamerPage,
                                      IsDesignTimeCreatable=False}"
@@ -20,8 +21,7 @@
 
     <Grid>
         <Grid Margin="5"
-              Height="{Binding ViewModel.Height,Mode=TwoWay}"
-              AllowDrop="True" Drop="UI_MainGrid_OnDrop">
+              Height="{Binding ViewModel.Height,Mode=TwoWay}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
                 <RowDefinition Height="50" />
@@ -35,30 +35,62 @@
                     Margin="3"
                     Padding="5"
                     CornerRadius="5"
-                    BorderBrush="{ui:ThemeResource AccentTextFillColorDisabledBrush}"
+                    BorderBrush="{ui:ThemeResource TextFillColorDisabledBrush}"
                     BorderThickness="1">
                 <ListView x:Name="UI_SourceFileList"
+                          dd:DragDrop.IsDragSource="True"
+                          dd:DragDrop.IsDropTarget="True"
+                          dd:DragDrop.DropHandler="{Binding ViewModel}"
                           ItemsSource="{Binding ViewModel.SourceFilePaths}">
+                    <behaviors:Interaction.Triggers>
+                        <behaviors:EventTrigger EventName="SelectionChanged" SourceObject="{Binding ElementName=UI_SourceFileList}">
+                            <behaviors:InvokeCommandAction
+                                Command="{Binding ViewModel.SourceFilesSelectedItemChangeCommand}"
+                                CommandParameter="{Binding SelectedItems,ElementName=UI_SourceFileList}" />
+                        </behaviors:EventTrigger>
+                    </behaviors:Interaction.Triggers>
                     <ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:DataFilePath}">
                             <TextBlock Margin="8,4" Text="{Binding FileName}" />
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="删除所选项" Command="{Binding ViewModel.DelSourceFilesItemCommand}"/>
+                            <MenuItem Header="重新排序" Command="{Binding ViewModel.SortSourceFilesItemCommand}"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                 </ListView>
             </Border>
             <Border Grid.Column="1" Grid.Row="0"
                     Margin="3"
                     Padding="5"
                     CornerRadius="5"
-                    BorderBrush="{ui:ThemeResource AccentTextFillColorDisabledBrush}"
+                    BorderBrush="{ui:ThemeResource TextFillColorDisabledBrush}"
                     BorderThickness="1">
                 <ListView x:Name="UI_SubFileList"
+                          dd:DragDrop.IsDragSource="True"
+                          dd:DragDrop.IsDropTarget="True"
+                          dd:DragDrop.DropHandler="{Binding ViewModel}"
                           ItemsSource="{Binding ViewModel.ShowSubFilePaths}">
+                    <behaviors:Interaction.Triggers>
+                        <behaviors:EventTrigger EventName="SelectionChanged" SourceObject="{Binding ElementName=UI_SubFileList}">
+                            <behaviors:InvokeCommandAction
+                                Command="{Binding ViewModel.ShowSubFilesSelectedItemChangeCommand}"
+                                CommandParameter="{Binding SelectedItems,ElementName=UI_SubFileList}" />
+                        </behaviors:EventTrigger>
+                    </behaviors:Interaction.Triggers>
                     <ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:DataFilePath}">
                             <TextBlock Margin="4,4" Text="{Binding FileName}" VerticalAlignment="Center" />
                         </DataTemplate>
                     </ListView.ItemTemplate>
+                    <ListView.ContextMenu>
+                        <ContextMenu>
+                            <MenuItem Header="删除所选项" Command="{Binding ViewModel.DelShowSubFilesItemCommand}"/>
+                            <MenuItem Header="重新排序" Command="{Binding ViewModel.SortShowSubFilesItemCommand}"/>
+                        </ContextMenu>
+                    </ListView.ContextMenu>
                 </ListView>
             </Border>
             <StackPanel Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1"

@@ -10,3 +10,4 @@ Win11 .net7.0  JetBrains Rider 2023.3.3
 [AnitomySharp](https://github.com/chu-shen/AnitomySharp)  
 [BangumiApi](https://github.com/bangumi/api)  
 [jellyfin-plugin-bangumi](https://github.com/kookxiang/jellyfin-plugin-bangumi)
+[gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)

@@ -22,31 +22,29 @@ public static class TextBlockWrappingBehavior
         DependencyObject d, 
         DependencyPropertyChangedEventArgs e)
     {
-        if (d is TextBlock textBlock)
+        if (d is not TextBlock textBlock) return;
+        if (textBlock.IsLoaded)
         {
-            if (textBlock.IsLoaded)
+            SetLineHeight();
+        }
+        else
+        {
+            textBlock.Loaded += OnLoaded;
+
+            void OnLoaded(object _, RoutedEventArgs __)
             {
+                textBlock.Loaded -= OnLoaded;
                 SetLineHeight();
             }
-            else
-            {
-                textBlock.Loaded += OnLoaded;
+        }
 
-                void OnLoaded(object _, RoutedEventArgs __)
-                {
-                    textBlock.Loaded -= OnLoaded;
-                    SetLineHeight();
-                }
-            }
-
-            void SetLineHeight()
-            {
-                double lineHeight =
-                    double.IsNaN(textBlock.LineHeight)
-                        ? textBlock.FontFamily.LineSpacing * textBlock.FontSize
-                        : textBlock.LineHeight;
-                textBlock.MaxHeight = Math.Ceiling(lineHeight * GetMaxLines(textBlock));
-            }
+        void SetLineHeight()
+        {
+            double lineHeight =
+                double.IsNaN(textBlock.LineHeight)
+                    ? textBlock.FontFamily.LineSpacing * textBlock.FontSize
+                    : textBlock.LineHeight;
+            textBlock.MaxHeight = Math.Ceiling(lineHeight * GetMaxLines(textBlock));
         }
     }
 }

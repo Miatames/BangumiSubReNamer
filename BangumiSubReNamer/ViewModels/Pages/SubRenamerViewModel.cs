@@ -1,23 +1,24 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Text.RegularExpressions;
 using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
 using BangumiSubReNamer.Views.Pages;
 using CommunityToolkit.Mvvm.Messaging;
+using GongSolutions.Wpf.DragDrop;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {
     public partial class SubRenamerViewModel : ObservableObject, INavigationAware
-        , IRecipient<DataWindowSize>, IRecipient<DataFilePath>
+        , IRecipient<DataWindowSize>, IDropTarget
     {
         public SubRenamerViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;
             WeakReferenceMessenger.Default.Register<DataWindowSize>(this);
-            WeakReferenceMessenger.Default.Register<DataFilePath>(this);
 
             Console.WriteLine("init SubRenamerViewModel");
         }
@@ -33,6 +34,9 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private int height = 580;
         [ObservableProperty] private bool isMoveFile = true;
         [ObservableProperty] private Visibility isMovingProcess = Visibility.Hidden;
+
+        private List<DataFilePath> sourceFileSelected = new();
+        private List<DataFilePath> showSubFileSelected = new();
 
         private string subExtensionRegex = "";
         private string subFileEndsRegex = "";
@@ -55,6 +59,57 @@ namespace BangumiSubReNamer.ViewModels.Pages
         }
 
         [RelayCommand]
+        private void OnSourceFilesSelectedItemChange(object sender)
+        {
+            if (sender is not IList list) return;
+
+            sourceFileSelected = list.Cast<DataFilePath>().ToList();
+        }
+
+        [RelayCommand]
+        private void OnShowSubFilesSelectedItemChange(object sender)
+        {
+            if (sender is not IList list) return;
+
+            showSubFileSelected = list.Cast<DataFilePath>().ToList();
+        }
+
+        [RelayCommand]
+        private void OnDelSourceFilesItem()
+        {
+            for (var i = sourceFileSelected.Count - 1; i >= 0; i--)
+            {
+                SourceFilePaths.Remove(sourceFileSelected[i]);
+            }
+        }
+
+        [RelayCommand]
+        private void OnDelShowSubFilesItem()
+        {
+            for (var i = showSubFileSelected.Count - 1; i >= 0; i--)
+            {
+                ShowSubFilePaths.Remove(showSubFileSelected[i]);
+            }
+        }
+
+        [RelayCommand]
+        private void OnSortSourceFilesItem()
+        {
+            var list = SourceFilePaths.ToList();
+            list.Sort((pathA, pathB) => ExtensionTools.StrCmpLogicalW(pathA.FilePath, pathB.FilePath));
+            SourceFilePaths = new ObservableCollection<DataFilePath>(list);
+        }
+
+        [RelayCommand]
+        private void OnSortShowSubFilesItem()
+        {
+            var list = ShowSubFilePaths.ToList();
+            list.Sort((pathA, pathB) => ExtensionTools.StrCmpLogicalW(pathA.FilePath, pathB.FilePath));
+            ShowSubFilePaths = new ObservableCollection<DataFilePath>(list);
+        }
+
+
+        [RelayCommand]
         private void OnClearAll()
         {
             ShowSubFilePaths.Clear();
@@ -68,7 +123,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         private void OnNavigateToPreviewWindow()
         {
             var sendMsg = new DataFilePathPreview();
-            
+
             for (int i = 0; i < Math.Min(ShowSubFilePaths.Count, SourceFilePaths.Count); i++)
             {
                 if (IsMoveFile)
@@ -78,7 +133,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     var newFile = newPath + "\\" + subFileName + SelectAddExtension +
                                   Path.GetExtension(ShowSubFilePaths[i].FilePath);
 
-                    sendMsg.fileList.Add(new DataFilePath(newFile,newFile));
+                    sendMsg.fileList.Add(new DataFilePath(newFile, newFile));
                 }
                 else
                 {
@@ -87,10 +142,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     var newFile = newPath + "\\" + subFileName + SelectAddExtension +
                                   Path.GetExtension(ShowSubFilePaths[i].FilePath);
 
-                    sendMsg.fileList.Add(new DataFilePath(newFile,newFile));
+                    sendMsg.fileList.Add(new DataFilePath(newFile, newFile));
                 }
             }
-            
+
             WeakReferenceMessenger.Default.Send<DataFilePathPreview>(sendMsg);
         }
 
@@ -98,18 +153,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
         {
             Console.WriteLine(CurrentExtension);
             AddShowSubFile();
-        }
-
-        public void RemoveFromSubList(string file)
-        {
-            foreach (var showSubFilePath in ShowSubFilePaths)
-            {
-                if (showSubFilePath.FileName == file)
-                {
-                    ShowSubFilePaths.Remove(showSubFilePath);
-                    break;
-                }
-            }
         }
 
         public void AddDropFile(List<string> filePathArrayOrder)
@@ -184,7 +227,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         }
 
         [RelayCommand]
-        private async void OnDoReName()
+        private async Task OnDoReName()
         {
             Console.WriteLine($"current add extension: [{SelectAddExtension}]");
             if (ShowSubFilePaths.Count <= 0)
@@ -242,11 +285,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
             Height = message.Height - 70;
         }
 
-        public void Receive(DataFilePath message)
-        {
-            ShowSubFilePaths.Add(message);
-        }
-
         partial void OnSelectAddExtensionChanged(string value)
         {
             Console.WriteLine($"add extension: [{SelectAddExtension}]");
@@ -264,5 +302,99 @@ namespace BangumiSubReNamer.ViewModels.Pages
         }
 
         public void OnNavigatedFrom() { }
+
+        public void DragOver(IDropInfo dropInfo)
+        {
+            switch (dropInfo)
+            {
+                case { Data: DataFilePath, TargetItem: DataFilePath }:
+                {
+                    dropInfo.DropTargetAdorner = DropTargetAdorners.Highlight;
+                    dropInfo.Effects = DragDropEffects.All;
+                    break;
+                }
+                case { Data: DataObject dataObject } when dataObject.GetDataPresent(DataFormats.FileDrop):
+                {
+                    dropInfo.DropTargetAdorner = null;
+                    dropInfo.Effects = DragDropEffects.Copy;
+                    break;
+                }
+            }
+        }
+
+        public void Drop(IDropInfo dropInfo)
+        {
+            switch (dropInfo)
+            {
+                case { Data: DataFilePath sourceItem, TargetItem: DataFilePath targetItem }
+                    when SourceFilePaths.Contains(sourceItem) && SourceFilePaths.Contains(targetItem) &&
+                         !sourceItem.Equals(targetItem):
+                {
+                    var sourceIndex = SourceFilePaths.IndexOf(sourceItem);
+                    SourceFilePaths.RemoveAt(sourceIndex);
+                    var targetIndex = SourceFilePaths.IndexOf(targetItem);
+                    if (targetIndex < 0 || targetIndex >= SourceFilePaths.Count) break;
+
+                    if (sourceIndex <= targetIndex)
+                    {
+                        SourceFilePaths.Insert(targetIndex + 1, sourceItem);
+                    }
+                    else
+                    {
+                        SourceFilePaths.Insert(targetIndex, sourceItem);
+                    }
+
+                    break;
+                }
+                case { Data: DataFilePath sourceItem, TargetItem: DataFilePath targetItem }
+                    when ShowSubFilePaths.Contains(sourceItem) && ShowSubFilePaths.Contains(targetItem) &&
+                         !sourceItem.Equals(targetItem):
+                {
+                    var sourceIndex = ShowSubFilePaths.IndexOf(sourceItem);
+                    ShowSubFilePaths.RemoveAt(sourceIndex);
+                    var targetIndex = ShowSubFilePaths.IndexOf(targetItem);
+                    if (targetIndex < 0 || targetIndex >= ShowSubFilePaths.Count) break;
+
+                    if (sourceIndex <= targetIndex)
+                    {
+                        ShowSubFilePaths.Insert(targetIndex + 1, sourceItem);
+                    }
+                    else
+                    {
+                        ShowSubFilePaths.Insert(targetIndex, sourceItem);
+                    }
+
+                    break;
+                }
+                case { Data: DataObject dataObject } when dataObject.ContainsFileDropList():
+                {
+                    var fileArray = dataObject.GetFileDropList();
+                    var filePathArray = new List<string>();
+                    foreach (var file in fileArray)
+                    {
+                        var addFile = file ?? "";
+
+                        if (File.Exists(addFile))
+                        {
+                            filePathArray.Add(addFile);
+                        }
+                        else if (Directory.Exists(addFile))
+                        {
+                            filePathArray.AddRange(Directory.GetFiles(addFile));
+                            filePathArray.AddRange(Directory.GetDirectories(addFile).SelectMany(Directory.GetFiles));
+                        }
+                        else
+                        {
+                            Console.WriteLine($"unknow file: {file}");
+                        }
+                    }
+
+                    filePathArray.Sort(ExtensionTools.StrCmpLogicalW);
+                    AddDropFile(filePathArray);
+
+                    break;
+                }
+            }
+        }
     }
 }
