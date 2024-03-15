@@ -27,6 +27,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
             {
                 OutFilePath += @"\";
             }
+            else if (OutFilePath.StartsWith(@"{RootPath}\"))
+            {
+                OutFilePath.Replace(@"{RootPath}\", @"{RootPath}");
+            }
 
             var reNamerConfig = new DataReNamerConfig(
                 addSubFileExtensionRegex: AddSubFileExtensionRegex,
