@@ -1,11 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
-using System.Xml;
-using System.Xml.Serialization;
 using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
 using CommunityToolkit.Mvvm.Messaging;
@@ -416,9 +413,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         }
                     }
 
-                    if (IsAddNfoFile && !File.Exists(Path.GetDirectoryName(targetPath) + @"\tvshow.nfo"))
+                    if (IsAddNfoFile && CurrentSearchMode == 0 &&
+                        !File.Exists(Path.GetDirectoryName(targetPath) + @"\tvshow.nfo"))
                     {
-                        var subjectsInfo = new NfoInfo_SubjectsRoot
+                        var subjectsInfo = new NfoInfo_SubjectsRootTv
                         {
                             bangumiid = EpisodesInfoList[i].SubjectId.ToString(),
                             title = EpisodesInfoList[i].SubjectNameCn,
@@ -428,11 +426,11 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         };
                         if (CurrentSearchMode == 0)
                         {
-                            RunCreateNfoFileSubjects(subjectsInfo, Path.GetDirectoryName(targetPath) + @"\tvshow.nfo");
+                            ExtensionTools.RunCreateNfoFile(subjectsInfo, Path.GetDirectoryName(targetPath) + @"\tvshow.nfo");
                         }
                         else
                         {
-                            RunCreateNfoFileSubjects(subjectsInfo, targetPath + @"\tvshow.nfo");
+                            ExtensionTools.RunCreateNfoFile(subjectsInfo, targetPath + @"\tvshow.nfo");
                         }
                     }
 
@@ -458,7 +456,20 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             episode = EpisodesInfoList[i].Sort.ToString(),
                             season = EpisodesInfoList[i].Type == 0 ? "1" : "0"
                         };
-                        RunCreateNfoFileEpisodes(episodesInfo,
+                        ExtensionTools.RunCreateNfoFile(episodesInfo,
+                            Path.GetDirectoryName(NewFileList[i].FilePath) + @"\" +
+                            Path.GetFileNameWithoutExtension(NewFileList[i].FileName) + ".nfo");
+                    }
+                    else if (IsAddNfoFile && CurrentSearchMode == 1)
+                    {
+                        var movieInfo = new NfoInfo_SubjectsRootMovie()
+                        {
+                            bangumiid = EpisodesInfoList[i].SubjectId.ToString(),
+                            title = EpisodesInfoList[i].SubjectNameCn,
+                            originaltitle = EpisodesInfoList[i].SubjectName,
+                            year = EpisodesInfoList[i].Year
+                        };
+                        ExtensionTools.RunCreateNfoFile(movieInfo,
                             Path.GetDirectoryName(NewFileList[i].FilePath) + @"\" +
                             Path.GetFileNameWithoutExtension(NewFileList[i].FileName) + ".nfo");
                     }
@@ -495,7 +506,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
                     if (IsAddNfoFile && !File.Exists(Path.GetDirectoryName(targetPath) + @"\tvshow.nfo"))
                     {
-                        var subjectsInfo = new NfoInfo_SubjectsRoot
+                        var subjectsInfo = new NfoInfo_SubjectsRootTv()
                         {
                             bangumiid = EpisodesInfoList[i].SubjectId.ToString(),
                             title = EpisodesInfoList[i].SubjectNameCn,
@@ -505,11 +516,11 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         };
                         if (CurrentSearchMode == 0)
                         {
-                            RunCreateNfoFileSubjects(subjectsInfo, Path.GetDirectoryName(targetPath) + @"\tvshow.nfo");
+                            ExtensionTools.RunCreateNfoFile(subjectsInfo, Path.GetDirectoryName(targetPath) + @"\tvshow.nfo");
                         }
                         else
                         {
-                            RunCreateNfoFileSubjects(subjectsInfo, targetPath + @"\tvshow.nfo");
+                            ExtensionTools.RunCreateNfoFile(subjectsInfo, targetPath + @"\tvshow.nfo");
                         }
                     }
 
@@ -535,7 +546,20 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             episode = EpisodesInfoList[i].Sort.ToString(),
                             season = EpisodesInfoList[i].Type == 0 ? "1" : "0"
                         };
-                        RunCreateNfoFileEpisodes(episodesInfo,
+                        ExtensionTools.RunCreateNfoFile(episodesInfo,
+                            Path.GetDirectoryName(NewFileList[i].FilePath) + @"\" +
+                            Path.GetFileNameWithoutExtension(NewFileList[i].FileName) + ".nfo");
+                    }
+                    else if (IsAddNfoFile && CurrentSearchMode == 1)
+                    {
+                        var movieInfo = new NfoInfo_SubjectsRootMovie()
+                        {
+                            bangumiid = EpisodesInfoList[i].SubjectId.ToString(),
+                            title = EpisodesInfoList[i].SubjectNameCn,
+                            originaltitle = EpisodesInfoList[i].SubjectName,
+                            year = EpisodesInfoList[i].Year
+                        };
+                        ExtensionTools.RunCreateNfoFile(movieInfo,
                             Path.GetDirectoryName(NewFileList[i].FilePath) + @"\" +
                             Path.GetFileNameWithoutExtension(NewFileList[i].FileName) + ".nfo");
                     }
@@ -581,7 +605,20 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             episode = EpisodesInfoList[i].Sort.ToString(),
                             season = EpisodesInfoList[i].Type == 0 ? "1" : "0"
                         };
-                        RunCreateNfoFileEpisodes(episodesInfo,
+                        ExtensionTools.RunCreateNfoFile(episodesInfo,
+                            Path.GetDirectoryName(SourceFileList[i].FilePath) + @"\" +
+                            Path.GetFileNameWithoutExtension(NewFileList[i].FileName) + ".nfo");
+                    }
+                    else if (IsAddNfoFile && CurrentSearchMode == 1)
+                    {
+                        var movieInfo = new NfoInfo_SubjectsRootMovie()
+                        {
+                            bangumiid = EpisodesInfoList[i].SubjectId.ToString(),
+                            title = EpisodesInfoList[i].SubjectNameCn,
+                            originaltitle = EpisodesInfoList[i].SubjectName,
+                            year = EpisodesInfoList[i].Year
+                        };
+                        ExtensionTools.RunCreateNfoFile(movieInfo,
                             Path.GetDirectoryName(SourceFileList[i].FilePath) + @"\" +
                             Path.GetFileNameWithoutExtension(NewFileList[i].FileName) + ".nfo");
                     }
@@ -589,44 +626,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
             });
             WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
                 new DataSnackbarMessage("重命名", msg, ControlAppearance.Info));
-        }
-
-        private void RunCreateNfoFileSubjects(NfoInfo_SubjectsRoot subjectsInfo, string filePath)
-        {
-            try
-            {
-                var serializer = new XmlSerializer(typeof(NfoInfo_SubjectsRoot));
-                using var writer = new XmlTextWriter(filePath, Encoding.UTF8);
-                writer.Formatting = Formatting.Indented;
-                var namespaces = new XmlSerializerNamespaces(new[]
-                {
-                    new XmlQualifiedName(string.Empty, "")
-                });
-                serializer.Serialize(writer, subjectsInfo, namespaces);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
-        }
-
-        private void RunCreateNfoFileEpisodes(NfoInfo_EpisodesRoot episodesInfo, string filePath)
-        {
-            try
-            {
-                var serializer = new XmlSerializer(typeof(NfoInfo_EpisodesRoot));
-                using var writer = new XmlTextWriter(filePath, Encoding.UTF8);
-                writer.Formatting = Formatting.Indented;
-                var namespaces = new XmlSerializerNamespaces(new[]
-                {
-                    new XmlQualifiedName(string.Empty, "")
-                });
-                serializer.Serialize(writer, episodesInfo, namespaces);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-            }
         }
 
         public void DragOver(IDropInfo dropInfo)

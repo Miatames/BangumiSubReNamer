@@ -62,12 +62,21 @@ public class NfoInfo_EpisodesRoot
 }
 
 [XmlRoot("tvshow")]
-public class NfoInfo_SubjectsRoot
+public class NfoInfo_SubjectsRootTv
 {
     public string bangumiid { get; set; }
     public string title { get; set; }
     public string originaltitle { get; set; }
     public string showtitle { get; set; }
+    public string year{ get; set; }
+}
+
+[XmlRoot("movie")]
+public class NfoInfo_SubjectsRootMovie
+{
+    public string bangumiid { get; set; }
+    public string title { get; set; }
+    public string originaltitle { get; set; }
     public string year{ get; set; }
 }
 

@@ -1,7 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml;
+using System.Xml.Serialization;
 
 namespace BangumiSubReNamer.Models;
 
@@ -121,6 +124,25 @@ public static class ExtensionTools
         var newStr = Regex.Replace(str, invalidPathNameStr, @" ");
 
         return rootpath + newStr;
+    }
+    
+    public static void RunCreateNfoFile<T>(T info, string filePath)
+    {
+        try
+        {
+            var serializer = new XmlSerializer(typeof(T));
+            using var writer = new XmlTextWriter(filePath, Encoding.UTF8);
+            writer.Formatting = Formatting.Indented;
+            var namespaces = new XmlSerializerNamespaces(new[]
+            {
+                new XmlQualifiedName(string.Empty, "")
+            });
+            serializer.Serialize(writer, info, namespaces);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
     [DllImport("Kernel32", CharSet = CharSet.Unicode)]
