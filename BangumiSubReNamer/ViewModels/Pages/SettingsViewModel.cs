@@ -19,6 +19,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private string defaultAddFileExtensions;
         [ObservableProperty] private string subFileExtensionRegex;
         [ObservableProperty] private string outFilePath;
+        [ObservableProperty] private string bangumiFileTemplate;
+        [ObservableProperty] private string movieFileTemplate;
 
         [RelayCommand]
         private void OnSetReNamerConfig()
@@ -36,6 +38,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
             GlobalConfig.Instance.ReNamerConfig = reNamerConfig;
             GlobalConfig.Instance.OutFilePath = OutFilePath;
+            GlobalConfig.Instance.CreateFileNameTemplateBangumi = BangumiFileTemplate;
+            GlobalConfig.Instance.CreateFileNameTemplateMovie = MovieFileTemplate;
             GlobalConfig.Instance.WriteConfig();
 
             WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("更新设置",
@@ -43,7 +47,9 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 AddSourceFileExtensionRegex + "\n" +
                 DefaultAddFileExtensions + "\n" +
                 SubFileExtensionRegex + "\n" +
-                OutFilePath,
+                OutFilePath + "\n" +
+                BangumiFileTemplate + "\n" +
+                MovieFileTemplate,
                 ControlAppearance.Success));
         }
 
@@ -54,8 +60,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
             DefaultAddFileExtensions = GlobalConfig.Instance.ReNamerConfig.DefaultAddExtensions;
             SubFileExtensionRegex = GlobalConfig.Instance.ReNamerConfig.SubFileExtensionRegex;
             OutFilePath = GlobalConfig.Instance.OutFilePath;
-
-            // Height = GlobalConfig.Instance.Height - 70;
+            BangumiFileTemplate = GlobalConfig.Instance.CreateFileNameTemplateBangumi;
+            MovieFileTemplate = GlobalConfig.Instance.CreateFileNameTemplateMovie;
         }
 
         public void OnNavigatedFrom() { }

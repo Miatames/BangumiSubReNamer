@@ -20,6 +20,8 @@ public class GlobalConfig
 
     public DataReNamerConfig ReNamerConfig;
     public string OutFilePath;
+    public string CreateFileNameTemplateBangumi;
+    public string CreateFileNameTemplateMovie;
     public int Width = 1100, Height = 650;
 
     public void ReadConfig()
@@ -35,6 +37,8 @@ public class GlobalConfig
                 subFileExtensionRegex: configuration.AppSettings.Settings["字幕排除"].Value);
 
             OutFilePath = configuration.AppSettings.Settings["硬链接默认路径"].Value;
+            CreateFileNameTemplateBangumi = configuration.AppSettings.Settings["剧集文件名模板"].Value;
+            CreateFileNameTemplateMovie = configuration.AppSettings.Settings["电影文件名模板"].Value;
         }
         catch (Exception e)
         {
@@ -53,12 +57,14 @@ public class GlobalConfig
             configuration.AppSettings.Settings["默认扩展名"].Value = ReNamerConfig.DefaultAddExtensions;
             configuration.AppSettings.Settings["字幕排除"].Value = ReNamerConfig.SubFileExtensionRegex;
             configuration.AppSettings.Settings["硬链接默认路径"].Value = OutFilePath;
+            configuration.AppSettings.Settings["剧集文件名模板"].Value = CreateFileNameTemplateBangumi;
+            configuration.AppSettings.Settings["电影文件名模板"].Value = CreateFileNameTemplateMovie;
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
         }
-        
+
         configuration.Save();
         ConfigurationManager.RefreshSection("appSettings");
     }

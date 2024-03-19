@@ -53,13 +53,13 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 EpisodesInfoList.Add(dataEpisodesInfo);
             }
 
-            CreateNewFileList();
+            // CreateNewFileList();
         }
 
-        partial void OnCurrentSearchModeChanged(int value)
+        /*partial void OnCurrentSearchModeChanged(int value)
         {
             CreateNewFileList();
-        }
+        }*/
 
         [RelayCommand]
         private void OnNavigateToPreviewWindow()
@@ -168,7 +168,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
             IsProcess = Visibility.Hidden;
 
-            CreateNewFileList();
+            // CreateNewFileList();
         }
 
         private void CreateNewFileList()
@@ -191,22 +191,25 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     case 0:
                         if (EpisodesInfoList[i].Type == 0)
                         {
-                            newName =
-                                $"{EpisodesInfoList[i].SubjectNameCn} - S1E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
+                            // newName =
+                            // $"{EpisodesInfoList[i].SubjectNameCn} - S1E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
+                            newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padleft);
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\Season 1\";
                         }
                         else
                         {
-                            newName =
-                                $"{EpisodesInfoList[i].SubjectNameCn} - S0E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
+                            // newName =
+                            // $"{EpisodesInfoList[i].SubjectNameCn} - S0E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
+                            newName = BangumiApiConfig.Instance.BangumiNewFileName(
+                                EpisodesInfoList[i], Path.GetFileName(sourcePath), padleft);
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\SP\";
                         }
 
                         break;
                     case 1:
-                        newName = sourceName;
+                        newName = BangumiApiConfig.Instance.MovieNewFileName(EpisodesInfoList[i], sourceName);
                         newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                   EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\";
                         break;
@@ -298,6 +301,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
         {
             Console.WriteLine("类型" + CurrentFileOperateMode);
 
+            CreateNewFileList();
+
             IsProcess = Visibility.Visible;
             ProcessText = "";
             switch (CurrentFileOperateMode)
@@ -310,8 +315,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     break;
                 case 2:
                     await RunRenameFiles();
-                    break;
-                default:
                     break;
             }
 
@@ -383,7 +386,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
             WeakReferenceMessenger.Default.Send<DataSearchStrMessage>(new DataSearchStrMessage(title));
 
-            CreateNewFileList();
+            // CreateNewFileList();
         }
 
         private async Task RunHardLinkFiles()
@@ -436,8 +439,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
                     try
                     {
+                        ProcessText = $"{i + 1}/{count}";
                         ExtensionTools.CreateHardLink(NewFileList[i].FilePath, SourceFileList[i].FilePath, IntPtr.Zero);
-                        ProcessText = $"{i}/{count}";
                         msg += NewFileList[i].FilePath + "\n";
                     }
                     catch (Exception e)
@@ -526,8 +529,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
                     try
                     {
+                        ProcessText = $"{i + 1}/{count}";
                         File.Copy(SourceFileList[i].FilePath, NewFileList[i].FilePath, true);
-                        ProcessText = $"{i}/{count}";
                         msg += NewFileList[i].FilePath + "\n";
                     }
                     catch (Exception e)
@@ -585,8 +588,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
                     try
                     {
+                        ProcessText = $"{i + 1}/{count}";
                         File.Move(SourceFileList[i].FilePath, newPath);
-                        ProcessText = $"{i}/{count}";
                         msg += NewFileList[i].FilePath + "\n";
                     }
                     catch (Exception e)
