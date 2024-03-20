@@ -105,7 +105,7 @@ public static class ExtensionTools
         // var invalidFileNameChar = Path.GetInvalidFileNameChars();
         // return invalidFileNameChar.Aggregate(str, (current, c) => current.Replace(c.ToString(), string.Empty));
 
-        var invalidFileNameStr = @"[\\\/\^*×―$%~!@#$…&%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
+        var invalidFileNameStr = @"[\\\/\^*×―$%~!@#$…%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
         return Regex.Replace(str, invalidFileNameStr, @" ");
     }
 
@@ -120,7 +120,7 @@ public static class ExtensionTools
             str = str.Replace(rootpath, "");
         }
 
-        var invalidPathNameStr = @"[\^*×―$%~!@#$…&%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
+        var invalidPathNameStr = @"[\^*×―$%~!@#$…%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
         var newStr = Regex.Replace(str, invalidPathNameStr, @" ");
 
         return rootpath + newStr;

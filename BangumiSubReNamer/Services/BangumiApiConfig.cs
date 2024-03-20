@@ -128,7 +128,7 @@ public class BangumiApiConfig
             SubjectNameCn = info.SubjectNameCn,
             EpisodeId = info.Id,
             EpisodeName = info.Name,
-            EpisodesNameCn = info.NameCn,
+            EpisodeNameCn = info.NameCn,
             EpisodesSort = (info.Type == 0 ? "S1E" : "S0E") + info.Sort.ToString().PadLeft(padLeft, '0'),
             Year = info.Year,
             SourceFileName = sourceFileName
@@ -156,7 +156,7 @@ public class BangumiApiConfig
             SubjectNameCn = info.SubjectNameCn,
             EpisodeId = info.Id,
             EpisodeName = info.Name,
-            EpisodesNameCn = info.NameCn,
+            EpisodeNameCn = info.NameCn,
             Year = info.Year,
             SourceFileName = sourceFileName
         };
