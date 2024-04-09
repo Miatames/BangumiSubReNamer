@@ -1,10 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.Text.Json;
-using System.Windows.Controls;
 using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
 using CommunityToolkit.Mvvm.Messaging;
 using Wpf.Ui.Controls;
+using ListView = Wpf.Ui.Controls.ListView;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {

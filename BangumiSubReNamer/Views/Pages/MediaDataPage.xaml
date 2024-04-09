@@ -61,18 +61,18 @@
                     <RowDefinition Height="Auto" />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <ListView Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
+                <ui:ListView Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
                           x:Name="UI_SearchResultList"
                           Margin="5,5"
                           SelectionMode="Single"
                           SelectedItem="{Binding ViewModel.SearchListSelectItem,Mode=TwoWay}"
                           ItemsSource="{Binding ViewModel.DataSearchResultsList}">
-                    <ListView.ItemTemplate>
+                    <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:DataSubjectsInfo}">
                             <TextBlock Margin="8,4" Text="{Binding ShowText}" />
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
                 <Grid Grid.Row="0" Grid.Column="1" Margin="5">
                     <!--<Grid.Resources>
                         <Style TargetType="TextBlock">
@@ -132,17 +132,17 @@
                                    NavigateUri="{Binding ViewModel.SubjectInfo_Url}" />
                     </StackPanel>
                 </Grid>
-                <ListView Grid.Row="1" Grid.Column="1"
+                <ui:ListView Grid.Row="1" Grid.Column="1"
                           x:Name="UI_EpisodesInfoList"
                           Margin="5,5"
                           SelectionMode="Extended"
                           ItemsSource="{Binding ViewModel.DataEpisodesInfosList}">
-                    <ListView.ItemTemplate>
+                    <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:DataEpisodesInfo}">
                             <TextBlock Margin="8,4" Text="{Binding ShowText}" />
                         </DataTemplate>
-                    </ListView.ItemTemplate>
-                </ListView>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
             </Grid>
 
         </Grid>
