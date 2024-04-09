@@ -35,14 +35,14 @@
             CloseWindowByDoubleClickOnIcon="False">
         </ui:TitleBar>
         <Grid Margin="10,55,10,10">
-            <ListView x:Name="UI_PreviewFileList"
+            <ui:ListView x:Name="UI_PreviewFileList"
                       ItemsSource="{Binding ViewModel.Paths}">
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:DataFilePath}">
                         <TextBlock Margin="4,4" Text="{Binding FilePath}" VerticalAlignment="Center" />
                     </DataTemplate>
                 </ListView.ItemTemplate>
-            </ListView>
+            </ui:ListView>
         </Grid>
     </Grid>
 </ui:FluentWindow>
