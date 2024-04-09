@@ -6,7 +6,7 @@ public class JsonDataClass
 {
 }
 
-#region search
+#region bgm api search
 
 public class BgmApiJson_SearchListItem
 {
@@ -22,6 +22,26 @@ public class BgmApiJson_Search
 {
     public float results { get; set; }
     public List<BgmApiJson_SearchListItem> list { get; set; }
+}
+
+#endregion
+
+#region tmdb api search
+
+public class TmdbApiJson_SearchResultsItem
+{
+    public int? id { get; set; }
+    public string original_title { get; set; }
+    public string original_name { get; set; }
+    public string media_type { get; set; }
+}
+
+public class TmdbApiJson_Search
+{
+    public int? page { get; set; }
+    public List<TmdbApiJson_SearchResultsItem> results { get; set; }
+    public int? total_pages { get; set; }
+    public int? total_results { get; set; }
 }
 
 #endregion

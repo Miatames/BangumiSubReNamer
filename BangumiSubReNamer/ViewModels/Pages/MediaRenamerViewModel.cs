@@ -113,8 +113,19 @@ namespace BangumiSubReNamer.ViewModels.Pages
             {
                 foreach (var searchStr in searchStrList)
                 {
-                    //使用BangumiApi搜素剧集信息，英文名可能搜不出
-                    var results = await BangumiApiConfig.Instance.BangumiApi_Search(searchStr);
+                    var searchStrOrigin = await BangumiApiConfig.Instance.TmdbApi_Search(searchStr);
+
+                    var results = new List<string>();
+                    if (!string.IsNullOrEmpty(searchStrOrigin))
+                    {
+                        //使用BangumiApi搜素剧集信息，英文名可能搜不出
+                        results = await BangumiApiConfig.Instance.BangumiApi_Search(searchStrOrigin);
+                    }
+                    else
+                    {
+                        results = await BangumiApiConfig.Instance.BangumiApi_Search(searchStr);
+                    }
+
                     if (results == null || results.Count <= 0)
                     {
                         WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(new DataSnackbarMessage("搜索无结果",
@@ -149,8 +160,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     //剧集模式搜索SP
                     if (CurrentSearchMode != 0) continue;
 
-                    var episodesSP = await BangumiApiConfig.Instance.BangumiApi_EpisodesSp(subjectId.ToString());
-                    var jsonEpisodesSp = JsonSerializer.Deserialize<BgmApiJson_EpisodesInfo>(episodesSP);
+                    var episodesSp = await BangumiApiConfig.Instance.BangumiApi_EpisodesSp(subjectId.ToString());
+                    var jsonEpisodesSp = JsonSerializer.Deserialize<BgmApiJson_EpisodesInfo>(episodesSp);
                     if (jsonEpisodesSp == null) continue;
 
                     foreach (var listItem in jsonEpisodesSp.data)
@@ -176,12 +187,14 @@ namespace BangumiSubReNamer.ViewModels.Pages
             var targetFolder = GlobalConfig.Instance.OutFilePath;
             NewFileList.Clear();
 
+            //集数补0
+            var padleft = Math.Min(SourceFileList.Count, EpisodesInfoList.Count).ToString().Length;
+
             for (int i = 0; i < Math.Min(SourceFileList.Count, EpisodesInfoList.Count); i++)
             {
                 var sourcePath = SourceFileList[i].FilePath;
                 var sourceName = SourceFileList[i].FileName;
 
-                var padleft = (Math.Min(SourceFileList.Count, EpisodesInfoList.Count)).ToString().Length;
 
                 var newPath = "";
                 var newName = "";
@@ -201,8 +214,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         {
                             // newName =
                             // $"{EpisodesInfoList[i].SubjectNameCn} - S0E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
-                            newName = BangumiApiConfig.Instance.BangumiNewFileName(
-                                EpisodesInfoList[i], Path.GetFileName(sourcePath), padleft);
+                            newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padleft);
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\SP\";
                         }

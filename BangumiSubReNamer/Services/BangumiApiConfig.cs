@@ -12,31 +12,79 @@ public class BangumiApiConfig
 
     public static BangumiApiConfig Instance;
 
-    private readonly HttpClient client;
+    private readonly HttpClient bgmApiClient;
+    private readonly HttpClient tmdbApiClient;
     private readonly FluidParser fileNameParser;
 
     public BangumiApiConfig()
     {
         Instance = this;
 
-        client = new HttpClient();
-        client.DefaultRequestHeaders.Add("Accept", "application/json");
-        client.DefaultRequestHeaders.Add("User-Agent",
+        bgmApiClient = new HttpClient();
+        bgmApiClient.DefaultRequestHeaders.Add("Accept", "application/json");
+        bgmApiClient.DefaultRequestHeaders.Add("User-Agent",
             "BangumiSubReNamer/0.4 (https://github.com/Miatames/BangumiSubReNamer)");
 
+        tmdbApiClient = new HttpClient();
+        tmdbApiClient.DefaultRequestHeaders.Add("Accept", "application/json");
+        tmdbApiClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + TmdbInfo.Authorization);
+
         fileNameParser = new FluidParser();
+    }
+
+    public async Task<string> TmdbApi_Search(string keywords)
+    {
+        var resultTitle = "";
+        if (keywords == "") return resultTitle;
+
+        var url = $"http://api.themoviedb.org/3/search/multi?query={Uri.EscapeDataString(keywords)}&include_adult=false&page=1";
+
+        try
+        {
+            var response = await tmdbApiClient.GetAsync(url);
+            Console.WriteLine("request: " + url + " : " + response.StatusCode);
+            if (!response.IsSuccessStatusCode) return resultTitle;
+
+            var jsonRoot = JsonSerializer.Deserialize<TmdbApiJson_Search>(await response.Content.ReadAsStringAsync());
+            if (jsonRoot is { results.Count: > 0 })
+            {
+                foreach (var resultsItem in jsonRoot.results)
+                {
+                    if (resultsItem.media_type == "tv")
+                    {
+                        resultTitle = resultsItem.original_name;
+                        break;
+                    }
+                    else if (resultsItem.media_type == "movie")
+                    {
+                        resultTitle = resultsItem.original_title;
+                        break;
+                    }
+                }
+            }
+
+            return resultTitle;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return resultTitle;
+        }
     }
 
     public async Task<List<string>> BangumiApi_Search(string keywords, bool getAllResults = false)
     {
         var results = new List<string>();
-        if (keywords == "") return results;
+        if (keywords == "" || keywords == null) return results;
 
-        var url = $"{apiUrl}/search/subject/{WebUtility.UrlEncode(keywords)}?type=2&responseGroup=large&start=0&max_results=25";
-        Console.WriteLine("request: " + url);
+        var url = $"{apiUrl}/search/subject/{Uri.EscapeDataString(keywords)}?type=2&responseGroup=large&start=0&max_results=25";
         try
         {
-            var result = await client.GetStringAsync(url);
+            var response = await bgmApiClient.GetAsync(url);
+            Console.WriteLine("request: " + url + " : " + response.StatusCode);
+            if (!response.IsSuccessStatusCode) return results;
+
+            var result = await response.Content.ReadAsStringAsync();
 
             if (result.StartsWith("<"))
             {
@@ -61,10 +109,12 @@ public class BangumiApiConfig
                 for (int i = 1; i < Math.Ceiling(maxCount.GetSingle() / 25.0f); i++)
                 {
                     var urlLoop =
-                        $"{apiUrl}/search/subject/{WebUtility.UrlEncode(keywords)}?type=2&responseGroup=large&start={i * 25}&max_results=25";
+                        $"{apiUrl}/search/subject/{Uri.EscapeDataString(keywords)}?type=2&responseGroup=large&start={i * 25}&max_results=25";
                     Console.WriteLine("request: " + urlLoop);
+                    var responseLoop = await bgmApiClient.GetAsync(urlLoop);
+                    if (!responseLoop.IsSuccessStatusCode) continue;
 
-                    var resultLoop = await client.GetStringAsync(urlLoop);
+                    var resultLoop = await responseLoop.Content.ReadAsStringAsync();
                     results.Add(resultLoop);
                 }
             }
@@ -83,11 +133,14 @@ public class BangumiApiConfig
         if (subject_id == "") return "";
 
         var url = $"{apiUrl}/v0/episodes?subject_id={subject_id}&type=0";
-        Console.WriteLine("request: " + url);
 
         try
         {
-            var result = await client.GetStringAsync(url);
+            var response = await bgmApiClient.GetAsync(url);
+            Console.WriteLine("request: " + url + " : " + response.StatusCode);
+            if (!response.IsSuccessStatusCode) return "";
+
+            var result = await response.Content.ReadAsStringAsync();
             return result;
         }
         catch (Exception e)
@@ -102,11 +155,14 @@ public class BangumiApiConfig
         if (subject_id == "") return "";
 
         var url = $"{apiUrl}/v0/episodes?subject_id={subject_id}&type=1";
-        Console.WriteLine("request: " + url);
 
         try
         {
-            var result = await client.GetStringAsync(url);
+            var response = await bgmApiClient.GetAsync(url);
+            Console.WriteLine("request: " + url + " : " + response.StatusCode);
+            if (!response.IsSuccessStatusCode) return "";
+
+            var result = await response.Content.ReadAsStringAsync();
             return result;
         }
         catch (Exception e)
