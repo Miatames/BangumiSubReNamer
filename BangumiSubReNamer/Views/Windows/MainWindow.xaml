@@ -22,7 +22,6 @@
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
     WindowStartupLocation="CenterScreen"
-    ResizeMode="CanMinimize"
     mc:Ignorable="d">
 
     <Grid>
@@ -30,8 +29,6 @@
             x:Name="TitleBar"
             Title="{Binding ViewModel.ApplicationTitle}"
             Grid.Row="0"
-            CanMaximize="False"
-            ShowMaximize="False"
             CloseWindowByDoubleClickOnIcon="False">
         </ui:TitleBar>
 
