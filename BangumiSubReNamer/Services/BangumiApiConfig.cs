@@ -35,7 +35,7 @@ public class BangumiApiConfig
     public async Task<string> TmdbApi_Search(string keywords)
     {
         var resultTitle = "";
-        if (keywords == "") return resultTitle;
+        if (string.IsNullOrEmpty(keywords)) return resultTitle;
 
         var url = $"http://api.themoviedb.org/3/search/multi?query={Uri.EscapeDataString(keywords)}&include_adult=false&page=1";
 
@@ -75,7 +75,7 @@ public class BangumiApiConfig
     public async Task<List<string>> BangumiApi_Search(string keywords, bool getAllResults = false)
     {
         var results = new List<string>();
-        if (keywords == "" || keywords == null) return results;
+        if (string.IsNullOrEmpty(keywords)) return results;
 
         var url = $"{apiUrl}/search/subject/{Uri.EscapeDataString(keywords)}?type=2&responseGroup=large&start=0&max_results=25";
         try
@@ -130,7 +130,7 @@ public class BangumiApiConfig
 
     public async Task<string> BangumiApi_Episodes(string subject_id)
     {
-        if (subject_id == "") return "";
+        if (string.IsNullOrEmpty(subject_id)) return "";
 
         var url = $"{apiUrl}/v0/episodes?subject_id={subject_id}&type=0";
 
@@ -152,7 +152,7 @@ public class BangumiApiConfig
 
     public async Task<string> BangumiApi_EpisodesSp(string subject_id)
     {
-        if (subject_id == "") return "";
+        if (string.IsNullOrEmpty(subject_id)) return "";
 
         var url = $"{apiUrl}/v0/episodes?subject_id={subject_id}&type=1";
 

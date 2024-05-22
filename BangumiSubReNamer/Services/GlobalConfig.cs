@@ -22,7 +22,6 @@ public class GlobalConfig
     public string OutFilePath;
     public string CreateFileNameTemplateBangumi;
     public string CreateFileNameTemplateMovie;
-    public int Width = 1100, Height = 650;
 
     public void ReadConfig()
     {

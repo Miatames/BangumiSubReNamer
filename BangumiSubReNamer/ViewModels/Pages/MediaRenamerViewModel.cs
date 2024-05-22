@@ -11,18 +11,15 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {
-    public partial class MediaRenamerViewModel : ObservableObject, INavigationAware,
-        IRecipient<DataWindowSize>, IRecipient<DataEpisodesInfoList>, IDropTarget
+    public partial class MediaRenamerViewModel : ObservableObject, INavigationAware, IRecipient<DataEpisodesInfoList>, IDropTarget
     {
         public MediaRenamerViewModel()
         {
-            WeakReferenceMessenger.Default.Register<DataWindowSize>(this);
             WeakReferenceMessenger.Default.Register<DataEpisodesInfoList>(this);
 
             Console.WriteLine("init MediaRenamerViewModel");
         }
 
-        [ObservableProperty] private int height = 580;
         [ObservableProperty] private Visibility isProcess = Visibility.Hidden;
         [ObservableProperty] private ObservableCollection<DataFilePath> sourceFileList = new();
         [ObservableProperty] private ObservableCollection<DataEpisodesInfo> episodesInfoList = new();
@@ -38,11 +35,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
         private List<DataFilePath> sourceFileSelected = new();
         private List<DataEpisodesInfo> episodesInfoSelected = new();
-
-        public void Receive(DataWindowSize message)
-        {
-            Height = message.Height - 70;
-        }
 
         public void Receive(DataEpisodesInfoList message)
         {
@@ -204,16 +196,12 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     case 0:
                         if (EpisodesInfoList[i].Type == 0)
                         {
-                            // newName =
-                            // $"{EpisodesInfoList[i].SubjectNameCn} - S1E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
                             newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padleft);
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\Season 1\";
                         }
                         else
                         {
-                            // newName =
-                            // $"{EpisodesInfoList[i].SubjectNameCn} - S0E{EpisodesInfoList[i].Sort.ToString().PadLeft(padleft, '0')} - {EpisodesInfoList[i].NameCn} - {sourceName}";
                             newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padleft);
                             newPath = targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)) +
                                       EpisodesInfoList[i].SubjectNameCn + $" ({EpisodesInfoList[i].Year})" + @"\SP\";
@@ -340,7 +328,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             // IsProcess = Visibility.Hidden;
             sourceFileEndsRegex = GlobalConfig.Instance.ReNamerConfig.AddSourceFileExtensionRegex;
             subFileEndsRegex = GlobalConfig.Instance.ReNamerConfig.AddSubFileExtensionRegex;
-            Height = GlobalConfig.Instance.Height - 70;
+            // Height = GlobalConfig.Instance.Height - 70;
         }
 
         public void OnNavigatedFrom() { }

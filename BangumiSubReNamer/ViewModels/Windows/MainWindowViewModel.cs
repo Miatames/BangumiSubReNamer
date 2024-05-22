@@ -12,9 +12,6 @@ namespace BangumiSubReNamer.ViewModels.Windows
     {
         [ObservableProperty] private string _applicationTitle = "BangumiSubReNamer";
 
-        [ObservableProperty] private int width = 1100;
-        [ObservableProperty] private int height = 650;
-
         [ObservableProperty] private ObservableCollection<object> _menuItems = new()
         {
             new NavigationViewItem()
@@ -50,15 +47,5 @@ namespace BangumiSubReNamer.ViewModels.Windows
         {
             new MenuItem { Header = "Home", Tag = "tray_home" }
         };
-
-        partial void OnHeightChanged(int value)
-        {
-             Console.WriteLine($"window size change: {Width}--{Height}");
-
-
-             GlobalConfig.Instance.Width = Width;
-             GlobalConfig.Instance.Height = Height;
-             WeakReferenceMessenger.Default.Send(new DataWindowSize(GlobalConfig.Instance.Width, GlobalConfig.Instance.Height));
-        }
     }
 }

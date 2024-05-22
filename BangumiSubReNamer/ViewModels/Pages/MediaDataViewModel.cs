@@ -8,18 +8,15 @@ using ListView = Wpf.Ui.Controls.ListView;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {
-    public partial class MediaDataViewModel : ObservableRecipient, INavigationAware,
-        IRecipient<DataWindowSize>, IRecipient<DataSearchStrMessage>
+    public partial class MediaDataViewModel : ObservableRecipient, INavigationAware, IRecipient<DataSearchStrMessage>
     {
         public MediaDataViewModel()
         {
-            WeakReferenceMessenger.Default.Register<DataWindowSize>(this);
             WeakReferenceMessenger.Default.Register<DataSearchStrMessage>(this);
 
             Console.WriteLine("init MediaDataPageViewModel");
         }
 
-        [ObservableProperty] private int height = 580;
         [ObservableProperty] private Visibility isProcess = Visibility.Hidden;
         [ObservableProperty] private string searchText = string.Empty;
 
@@ -39,11 +36,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
         private Dictionary<string, string> resultsDict = new Dictionary<string, string>();
         private Dictionary<string, string> resultsSpDict = new Dictionary<string, string>();
-
-        public void Receive(DataWindowSize message)
-        {
-            Height = message.Height - 70;
-        }
 
         public void Receive(DataSearchStrMessage message)
         {
@@ -74,7 +66,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         public void OnNavigatedTo()
         {
             // IsProcess = Visibility.Hidden;
-            Height = GlobalConfig.Instance.Height - 70;
+            // Height = GlobalConfig.Instance.Height - 70;
         }
 
         public void OnNavigatedFrom() { }

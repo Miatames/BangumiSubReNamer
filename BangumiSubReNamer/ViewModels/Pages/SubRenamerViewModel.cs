@@ -12,13 +12,11 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {
-    public partial class SubRenamerViewModel : ObservableObject, INavigationAware
-        , IRecipient<DataWindowSize>, IDropTarget
+    public partial class SubRenamerViewModel : ObservableObject, INavigationAware ,IDropTarget
     {
         public SubRenamerViewModel(INavigationService navigationService)
         {
             this.navigationService = navigationService;
-            WeakReferenceMessenger.Default.Register<DataWindowSize>(this);
 
             Console.WriteLine("init SubRenamerViewModel");
         }
@@ -31,7 +29,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private ObservableCollection<DataFilePath> sourceFilePaths = new();
         [ObservableProperty] private ObservableCollection<string> addExtensions = new();
         [ObservableProperty] private string selectAddExtension = "";
-        [ObservableProperty] private int height = 580;
         [ObservableProperty] private bool isMoveFile = true;
         [ObservableProperty] private Visibility isMovingProcess = Visibility.Hidden;
 
@@ -280,11 +277,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
             IsMovingProcess = Visibility.Hidden;
         }
 
-        public void Receive(DataWindowSize message)
-        {
-            Height = message.Height - 70;
-        }
-
         partial void OnSelectAddExtensionChanged(string value)
         {
             Console.WriteLine($"add extension: [{SelectAddExtension}]");
@@ -298,7 +290,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             subExtensionRegex = GlobalConfig.Instance.ReNamerConfig.SubFileExtensionRegex;
 
             // IsMovingProcess = Visibility.Hidden;
-            Height = GlobalConfig.Instance.Height - 70;
+            // Height = GlobalConfig.Instance.Height - 70;
         }
 
         public void OnNavigatedFrom() { }
