@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.IO;
+using System.Net;
 using System.Net.Http;
 using System.Text.Json;
 using BangumiSubReNamer.Models;
@@ -175,6 +176,7 @@ public class BangumiApiConfig
     public string BangumiNewFileName(DataEpisodesInfo info, string sourceFileName, int padLeft)
     {
         var fileName = sourceFileName;
+        var extensionName = Path.GetExtension(fileName);
         var templateFileName = GlobalConfig.Instance.CreateFileNameTemplateBangumi;
 
         var data = new
@@ -195,6 +197,11 @@ public class BangumiApiConfig
             var context = new TemplateContext(data);
 
             fileName = template.Render(context);
+
+            if (!templateFileName.Contains("SourceFileName"))
+            {
+                fileName = fileName + extensionName;
+            }
         }
 
         return fileName;
@@ -203,6 +210,7 @@ public class BangumiApiConfig
     public string MovieNewFileName(DataEpisodesInfo info, string sourceFileName)
     {
         var fileName = sourceFileName;
+        var extensionName = Path.GetExtension(fileName);
         var templateFileName = GlobalConfig.Instance.CreateFileNameTemplateMovie;
 
         var data = new
@@ -222,6 +230,11 @@ public class BangumiApiConfig
             var context = new TemplateContext(data);
 
             fileName = template.Render(context);
+
+            if (!templateFileName.Contains("SourceFileName"))
+            {
+                fileName = fileName + extensionName;
+            }
         }
 
         return fileName;
