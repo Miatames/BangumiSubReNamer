@@ -2,14 +2,15 @@
 
 public class DataSubjectsInfo
 {
-    public float Id { get; set; }
-    public string Name { get; set; }
-    public string NameCn { get; set; }
-    public float EpsCount { get; set; }
-    public string Desc { get; set; }
-    public string AirDate { get; set; }
-    public string ShowText { get; set; }
+    public float Id { get; }
+    public string Name { get; }
+    public string NameCn { get; }
+    public float EpsCount { get; }
+    public string Desc { get; }
+    public string AirDate { get; }
+    public string ShowText { get; }
 
+    private const double Tolerance = 1e-6;
 
     public DataSubjectsInfo(float id, string name, string nameCn, float epsCount, string desc, string airDate)
     {
@@ -25,12 +26,21 @@ public class DataSubjectsInfo
     public override bool Equals(object? other)
     {
         if (other is not DataSubjectsInfo info) return false;
-        return Id == info.Id && Name == info.Name && NameCn == info.NameCn &&
-               EpsCount == info.EpsCount && AirDate.Equals(info.AirDate);
+        return Math.Abs(Id - info.Id) < Tolerance && Name == info.Name && NameCn == info.NameCn &&
+               Math.Abs(EpsCount - info.EpsCount) < Tolerance && AirDate.Equals(info.AirDate);
     }
+
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Id, Name, NameCn, EpsCount, AirDate);
+        var hashCode = new HashCode();
+        hashCode.Add(Id);
+        hashCode.Add(Name);
+        hashCode.Add(NameCn);
+        hashCode.Add(EpsCount);
+        hashCode.Add(Desc);
+        hashCode.Add(AirDate);
+        hashCode.Add(ShowText);
+        return hashCode.ToHashCode();
     }
 }

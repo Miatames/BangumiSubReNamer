@@ -10,8 +10,8 @@ public class DataFilePath
         FileName = fileName;
     }
 
-    public string FilePath { get; set; }
-    public string FileName { get; set; }
+    public string FilePath { get; }
+    public string FileName { get; }
 
 
     public override bool Equals(object? obj)

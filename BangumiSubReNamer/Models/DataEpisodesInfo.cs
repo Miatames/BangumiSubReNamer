@@ -2,18 +2,20 @@
 
 public class DataEpisodesInfo
 {
-    public float Id { get; set; }
-    public string Name { get; set; }
-    public string NameCn { get; set; }
-    public string SubjectName { get; set; }
-    public string SubjectNameCn { get; set; }
-    public float Ep { get; set; }
-    public float Sort { get; set; }
-    public float SubjectId { get; set; }
-    public float Type { get; set; }
+    public float Id { get; }
+    public string Name { get; }
+    public string NameCn { get; }
+    public string SubjectName { get; }
+    public string SubjectNameCn { get; }
+    public float Ep { get; }
+    public float Sort { get; }
+    public float SubjectId { get; }
+    public float Type { get; }
 
-    public string Year { get; set; }
-    public string ShowText { get; set; }
+    public string Year { get; }
+    public string ShowText { get; }
+
+    private const double Tolerance = 1e-6;
 
     public DataEpisodesInfo(float id, string name, string nameCn, string subjectName, string subjectNameCn, float ep, float sort,
         float subjectId, float type, string year)
@@ -40,13 +42,26 @@ public class DataEpisodesInfo
     {
         if (obj is not DataEpisodesInfo other) return false;
 
-        return Id == other.Id && Name == other.Name && NameCn == other.NameCn && SubjectName == other.SubjectName
-               && SubjectNameCn == other.SubjectNameCn && Ep == other.Ep && Sort == other.Sort && Year == other.Year &&
-               SubjectId == other.SubjectId;
+        return Math.Abs(Id - other.Id) < Tolerance && Name == other.Name && NameCn == other.NameCn && SubjectName == other.SubjectName
+               && SubjectNameCn == other.SubjectNameCn && Math.Abs(Ep - other.Ep) < Tolerance && Math.Abs(Sort - other.Sort) < Tolerance
+               && Year == other.Year && Math.Abs(SubjectId - other.SubjectId) < Tolerance;
     }
+
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(Id, NameCn, SubjectNameCn, Ep, Sort, SubjectId, Type);
+        var hashCode = new HashCode();
+        hashCode.Add(Id);
+        hashCode.Add(Name);
+        hashCode.Add(NameCn);
+        hashCode.Add(SubjectName);
+        hashCode.Add(SubjectNameCn);
+        hashCode.Add(Ep);
+        hashCode.Add(Sort);
+        hashCode.Add(SubjectId);
+        hashCode.Add(Type);
+        hashCode.Add(Year);
+        hashCode.Add(ShowText);
+        return hashCode.ToHashCode();
     }
 }
