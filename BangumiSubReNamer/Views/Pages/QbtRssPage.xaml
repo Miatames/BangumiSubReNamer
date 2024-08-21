@@ -1,0 +1,50 @@
+﻿<Page x:Class="BangumiSubReNamer.Views.Pages.QbtRssPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:local="clr-namespace:BangumiSubReNamer.Views.Pages"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      Title="QbtRssPage"
+      d:DataContext="{d:DesignInstance local:QbtRssPage,
+                                     IsDesignTimeCreatable=False}"
+      d:DesignHeight="450"
+      d:DesignWidth="800"
+      ui:Design.Background="{DynamicResource ApplicationBackgroundBrush}"
+      ui:Design.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+      mc:Ignorable="d">
+    <Grid Margin="5">
+        <StackPanel Orientation="Vertical"
+                    Margin="20">
+            <Label Margin="0,10,0,0" Content="剧集名称:" />
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <ui:TextBox Grid.Column="0" Text="{Binding ViewModel.BangumiName}" />
+                <CheckBox Grid.Column="1" Margin="10,0,0,0"
+                          Content="使用中文名称"
+                          IsChecked="{Binding ViewModel.IsUseNameCn,Mode=TwoWay}"
+                          Command="{Binding ViewModel.SetIsUseNameCnCommand}" />
+            </Grid>
+
+            <Label Margin="0,10,0,0" Content="Bangumi Id:" />
+            <ui:TextBox Text="{Binding ViewModel.BangumiId}" />
+
+            <Label Margin="0,10,0,0" Content="Rss订阅地址:" />
+            <ui:TextBox Text="{Binding ViewModel.RssFeedPath}" />
+
+            <Label Margin="0,10,0,0" Content="Rss规则名称:" />
+            <ui:TextBox Text="{Binding ViewModel.RssRuleName}"
+                        PlaceholderText="{Binding ViewModel.BangumiName}" />
+
+            <ui:Button Content="添加订阅"
+                       HorizontalAlignment="Right"
+                       Width="120" Height="32" Margin="0,10"
+                       Appearance="Primary"
+                       Command="{Binding ViewModel.AddRssToQbtCommand}" />
+        </StackPanel>
+    </Grid>
+</Page>

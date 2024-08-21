@@ -52,6 +52,7 @@ namespace BangumiSubReNamer.Services
                 _navigationWindow!.ShowWindow();
                 _navigationWindow.Navigate(typeof(Views.Pages.MediaDataPage));
                 _navigationWindow.Navigate(typeof(Views.Pages.SubRenamerPage));
+                _navigationWindow.Navigate(typeof(Views.Pages.QbtRssPage));
                 _navigationWindow.Navigate(typeof(Views.Pages.SettingsPage));
                 
                 _navigationWindow.Navigate(typeof(Views.Pages.MediaRenamerPage));

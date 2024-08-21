@@ -21,6 +21,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private string outFilePath;
         [ObservableProperty] private string bangumiFileTemplate;
         [ObservableProperty] private string movieFileTemplate;
+        [ObservableProperty] private string qbtWebUrl;
+        [ObservableProperty] private string qbtDownloadPath;
 
         [RelayCommand]
         private void OnSetReNamerConfig()
@@ -29,7 +31,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             {
                 OutFilePath += @"\";
             }
-            
+
             var reNamerConfig = new DataReNamerConfig(
                 addSubFileExtensionRegex: AddSubFileExtensionRegex,
                 addSourceFileExtensionRegex: AddSourceFileExtensionRegex,
@@ -40,17 +42,11 @@ namespace BangumiSubReNamer.ViewModels.Pages
             GlobalConfig.Instance.OutFilePath = OutFilePath;
             GlobalConfig.Instance.CreateFileNameTemplateBangumi = BangumiFileTemplate;
             GlobalConfig.Instance.CreateFileNameTemplateMovie = MovieFileTemplate;
+            GlobalConfig.Instance.QbtWebUrl = QbtWebUrl;
+            GlobalConfig.Instance.QbtDownloadPath = QbtDownloadPath;
             GlobalConfig.Instance.WriteConfig();
 
-            WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("更新设置",
-                AddSubFileExtensionRegex + "\n" +
-                AddSourceFileExtensionRegex + "\n" +
-                DefaultAddFileExtensions + "\n" +
-                SubFileExtensionRegex + "\n" +
-                OutFilePath + "\n" +
-                BangumiFileTemplate + "\n" +
-                MovieFileTemplate,
-                ControlAppearance.Success));
+            WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("更新设置", "", ControlAppearance.Success));
         }
 
         public void OnNavigatedTo()
@@ -62,8 +58,12 @@ namespace BangumiSubReNamer.ViewModels.Pages
             OutFilePath = GlobalConfig.Instance.OutFilePath;
             BangumiFileTemplate = GlobalConfig.Instance.CreateFileNameTemplateBangumi;
             MovieFileTemplate = GlobalConfig.Instance.CreateFileNameTemplateMovie;
+            QbtWebUrl = GlobalConfig.Instance.QbtWebUrl;
+            QbtDownloadPath = GlobalConfig.Instance.QbtDownloadPath;
         }
 
-        public void OnNavigatedFrom() { }
+        public void OnNavigatedFrom()
+        {
+        }
     }
 }

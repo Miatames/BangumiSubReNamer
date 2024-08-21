@@ -60,7 +60,23 @@ namespace BangumiSubReNamer.ViewModels.Pages
         {
             if (sender is not ListView listView) return;
 
-            await DoAddEpoisodesToRename(listView);
+            await DoAddEpisodesToRename(listView);
+        }
+
+        [RelayCommand]
+        private void OnAddToRss(object sender)
+        {
+            if (SearchListSelectItem != null)
+            {
+                WeakReferenceMessenger.Default.Send<DataSubjectsInfo>(SearchListSelectItem);
+                WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
+                    new DataSnackbarMessage("添加到Rss", SearchListSelectItem.NameCn, ControlAppearance.Success));
+            }
+            else
+            {
+                WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
+                    new DataSnackbarMessage("添加到Rss", "失败", ControlAppearance.Caution));
+            }
         }
 
         public void OnNavigatedTo()
@@ -71,7 +87,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
         public void OnNavigatedFrom() { }
 
-        private async Task DoAddEpoisodesToRename(ListView listView)
+        private async Task DoAddEpisodesToRename(ListView listView)
         {
             var selectedItems = listView.SelectedItems.Cast<DataEpisodesInfo>().ToList();
 
@@ -200,7 +216,6 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 Console.WriteLine(e);
             }
 
-            await Task.Delay(100);
         }
 
         partial void OnSearchListSelectItemChanged(DataSubjectsInfo? value)

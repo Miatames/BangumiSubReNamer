@@ -34,6 +34,12 @@ namespace BangumiSubReNamer.ViewModels.Windows
             },
             new NavigationViewItem()
             {
+                Content = "Rss",
+                Icon = new SymbolIcon { Symbol = SymbolRegular.Rss24 },
+                TargetPageType = typeof(Views.Pages.QbtRssPage)
+            },
+            new NavigationViewItem()
+            {
                 Content = "设置",
                 Icon = new SymbolIcon { Symbol = SymbolRegular.Settings24 },
                 TargetPageType = typeof(Views.Pages.SettingsPage)
@@ -43,9 +49,10 @@ namespace BangumiSubReNamer.ViewModels.Windows
         [ObservableProperty] private ObservableCollection<object> _footerMenuItems = new()
             { };
 
-        [ObservableProperty] private ObservableCollection<MenuItem> _trayMenuItems = new()
-        {
-            new MenuItem { Header = "Home", Tag = "tray_home" }
-        };
+        [ObservableProperty] private ObservableCollection<MenuItem> _trayMenuItems =
+            new()
+            {
+                new MenuItem { Header = "Home", Tag = "tray_home" }
+            };
     }
 }

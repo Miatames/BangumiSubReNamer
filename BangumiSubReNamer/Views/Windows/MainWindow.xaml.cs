@@ -18,6 +18,7 @@ namespace BangumiSubReNamer.Views.Windows
 
         private GlobalConfig globalConfig;
         private BangumiApiConfig bangumiApiConfig;
+        private QbtApiConfig qbtApiConfig;
         private readonly ISnackbarService snackbarService;
         private StreamWriter consoleStreamWriter;
 
@@ -45,6 +46,7 @@ namespace BangumiSubReNamer.Views.Windows
             Console.WriteLine("start");
 
             bangumiApiConfig = new BangumiApiConfig();
+            qbtApiConfig = new QbtApiConfig();
             globalConfig = new GlobalConfig();
             snackbarService = new SnackbarService();
             snackbarService.SetSnackbarPresenter(UI_SnackbarPresenter);

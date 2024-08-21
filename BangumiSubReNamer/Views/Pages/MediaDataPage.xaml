@@ -63,11 +63,11 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <ui:ListView Grid.Row="0" Grid.Column="0" Grid.RowSpan="2"
-                          x:Name="UI_SearchResultList"
-                          Margin="5,5"
-                          SelectionMode="Single"
-                          SelectedItem="{Binding ViewModel.SearchListSelectItem,Mode=TwoWay}"
-                          ItemsSource="{Binding ViewModel.DataSearchResultsList}">
+                             x:Name="UI_SearchResultList"
+                             Margin="5,5"
+                             SelectionMode="Single"
+                             SelectedItem="{Binding ViewModel.SearchListSelectItem,Mode=TwoWay}"
+                             ItemsSource="{Binding ViewModel.DataSearchResultsList}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:DataSubjectsInfo}">
                             <TextBlock Margin="8,4" Text="{Binding ShowText}" />
@@ -118,26 +118,41 @@
                     </TextBlock>
                     <StackPanel Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2" Margin="2"
                                 Orientation="Horizontal">
-                        <ui:Button Width="140" Height="30" Appearance="Primary" Margin="5"
-                                   Content="添加到元数据" HorizontalAlignment="Right"
-                                   Command="{Binding ViewModel.AddToRenameCommand}"
-                                   Icon="{ui:SymbolIcon AddSquare24}"
-                                   CommandParameter="{Binding ElementName=UI_EpisodesInfoList}" />
-                        <ui:Button Width="120" Height="30" Appearance="Primary" Margin="5"
-                                   Content="剧集列表" HorizontalAlignment="Right"
-                                   Icon="{ui:SymbolIcon AppsList24}"
-                                   Command="{Binding ViewModel.GetEpisodesInfoCommand}" />
-                        <ui:Anchor Width="120" Height="30" Appearance="Info" Margin="5"
-                                   Content="访问bgn.tv" HorizontalAlignment="Right"
-                                   Icon="{ui:SymbolIcon Link24}"
-                                   NavigateUri="{Binding ViewModel.SubjectInfo_Url}" />
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+                            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                                <ui:Button Width="140" Height="30" Appearance="Primary" Margin="5"
+                                           Content="添加到元数据" HorizontalAlignment="Right"
+                                           Command="{Binding ViewModel.AddToRenameCommand}"
+                                           Icon="{ui:SymbolIcon AddSquare24}"
+                                           CommandParameter="{Binding ElementName=UI_EpisodesInfoList}" />
+                                <ui:Button Width="140" Height="30" Appearance="Primary" Margin="5"
+                                           Content="添加到Rss" HorizontalAlignment="Right"
+                                           Command="{Binding ViewModel.AddToRssCommand}"
+                                           Icon="{ui:SymbolIcon Rss24}"
+                                           CommandParameter="{Binding ElementName=UI_SearchResultList}" />
+                            </StackPanel>
+                            <StackPanel Grid.Row="1" Orientation="Horizontal">
+                                <ui:Button Width="120" Height="30" Appearance="Primary" Margin="5"
+                                           Content="剧集列表" HorizontalAlignment="Right"
+                                           Icon="{ui:SymbolIcon AppsList24}"
+                                           Command="{Binding ViewModel.GetEpisodesInfoCommand}" />
+                                <ui:Anchor Width="120" Height="30" Appearance="Info" Margin="5"
+                                           Content="访问bgn.tv" HorizontalAlignment="Right"
+                                           Icon="{ui:SymbolIcon Link24}"
+                                           NavigateUri="{Binding ViewModel.SubjectInfo_Url}" />
+                            </StackPanel>
+                        </Grid>
                     </StackPanel>
                 </Grid>
                 <ui:ListView Grid.Row="1" Grid.Column="1"
-                          x:Name="UI_EpisodesInfoList"
-                          Margin="5,5"
-                          SelectionMode="Extended"
-                          ItemsSource="{Binding ViewModel.DataEpisodesInfosList}">
+                             x:Name="UI_EpisodesInfoList"
+                             Margin="5,5"
+                             SelectionMode="Extended"
+                             ItemsSource="{Binding ViewModel.DataEpisodesInfosList}">
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:DataEpisodesInfo}">
                             <TextBlock Margin="8,4" Text="{Binding ShowText}" />

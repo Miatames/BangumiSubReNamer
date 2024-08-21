@@ -43,6 +43,8 @@ namespace BangumiSubReNamer
                 services.AddSingleton<MediaDataViewModel>();
                 services.AddSingleton<SubRenamerPage>();
                 services.AddSingleton<SubRenamerViewModel>();
+                services.AddSingleton<QbtRssPage>();
+                services.AddSingleton<QbtRssViewModel>();
                 services.AddSingleton<SettingsPage>();
                 services.AddSingleton<SettingsViewModel>();
             }).Build();

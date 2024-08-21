@@ -22,6 +22,8 @@ public class GlobalConfig
     public string OutFilePath;
     public string CreateFileNameTemplateBangumi;
     public string CreateFileNameTemplateMovie;
+    public string QbtWebUrl;
+    public string QbtDownloadPath;
 
     public void ReadConfig()
     {
@@ -38,6 +40,8 @@ public class GlobalConfig
             OutFilePath = configuration.AppSettings.Settings["硬链接默认路径"].Value;
             CreateFileNameTemplateBangumi = configuration.AppSettings.Settings["剧集文件名模板"].Value;
             CreateFileNameTemplateMovie = configuration.AppSettings.Settings["电影文件名模板"].Value;
+            QbtWebUrl = configuration.AppSettings.Settings["qBittorrent网页地址"].Value;
+            QbtDownloadPath = configuration.AppSettings.Settings["qBittorrent下载路径"].Value;
         }
         catch (Exception e)
         {
@@ -58,6 +62,8 @@ public class GlobalConfig
             configuration.AppSettings.Settings["硬链接默认路径"].Value = OutFilePath;
             configuration.AppSettings.Settings["剧集文件名模板"].Value = CreateFileNameTemplateBangumi;
             configuration.AppSettings.Settings["电影文件名模板"].Value = CreateFileNameTemplateMovie;
+            configuration.AppSettings.Settings["qBittorrent网页地址"].Value = QbtWebUrl;
+            configuration.AppSettings.Settings["qBittorrent下载路径"].Value = QbtDownloadPath;
         }
         catch (Exception e)
         {
