@@ -4,12 +4,15 @@ using Microsoft.Extensions.Hosting;
 using System.IO;
 using System.Reflection;
 using System.Windows.Threading;
+using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
 using BangumiSubReNamer.ViewModels.Pages;
 using BangumiSubReNamer.ViewModels.Windows;
 using BangumiSubReNamer.Views.Pages;
 using BangumiSubReNamer.Views.Windows;
+using CommunityToolkit.Mvvm.Messaging;
 using Wpf.Ui;
+using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer
 {
@@ -83,6 +86,9 @@ namespace BangumiSubReNamer
         /// </summary>
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
+            WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
+                new DataSnackbarMessage("错误", e.Exception.Message, ControlAppearance.Caution));
+            e.Handled = true;
         }
     }
 }
