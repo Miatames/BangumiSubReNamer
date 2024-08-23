@@ -189,19 +189,14 @@ public class BangumiApiConfig
             EpisodeNameCn = info.NameCn,
             EpisodesSort = (info.Type == 0 ? "S1E" : "S0E") + info.Sort.ToString().PadLeft(padLeft, '0'),
             Year = info.Year,
-            SourceFileName = sourceFileName
+            SourceFileName = Path.GetFileNameWithoutExtension(sourceFileName)
         };
 
         if (fileNameParser.TryParse(templateFileName, out var template))
         {
             var context = new TemplateContext(data);
 
-            fileName = template.Render(context);
-
-            if (!templateFileName.Contains("SourceFileName"))
-            {
-                fileName = fileName + extensionName;
-            }
+            fileName = template.Render(context) + extensionName;
         }
 
         return fileName;

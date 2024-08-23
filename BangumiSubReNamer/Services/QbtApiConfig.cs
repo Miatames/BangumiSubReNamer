@@ -19,7 +19,7 @@ public class QbtApiConfig
 
     public async Task QbtApi_AddFeed(string feedUrl, string feedName)
     {
-        var api = GlobalConfig.Instance.QbtWebUrl + "/api/v2/rss/addFeed";
+        var api = new Uri(new Uri(GlobalConfig.Instance.QbtWebUrl), "/api/v2/rss/addFeed");
         var param = new Dictionary<string, string>();
         param.Add("url", feedUrl);
         param.Add("path", feedName);
@@ -27,7 +27,7 @@ public class QbtApiConfig
         try
         {
             var response = await qbtApiClient.PostAsync(api, new FormUrlEncodedContent(param));
-            Console.WriteLine("qBittorrent Add Feed" + response.StatusCode);
+            Console.WriteLine("qBittorrent Add Feed " + response.StatusCode);
         }
         catch (Exception e)
         {
@@ -37,7 +37,7 @@ public class QbtApiConfig
 
     public async Task QbtApi_AddRule(DataAddRssRule addRssRuleData, string ruleName)
     {
-        var api = GlobalConfig.Instance.QbtWebUrl + "/api/v2/rss/setRule";
+        var api = new Uri(new Uri(GlobalConfig.Instance.QbtWebUrl), "/api/v2/rss/setRule");
         try
         {
             var param = new Dictionary<string, string>();
@@ -45,7 +45,7 @@ public class QbtApiConfig
             param.Add("ruleDef",JsonSerializer.Serialize(addRssRuleData));
 
             var response = await qbtApiClient.PostAsync(api, new FormUrlEncodedContent(param));
-            Console.WriteLine("qBittorrent Set Rule" + response.StatusCode);
+            Console.WriteLine("qBittorrent Set Rule " + response.StatusCode);
         }
         catch (Exception e)
         {

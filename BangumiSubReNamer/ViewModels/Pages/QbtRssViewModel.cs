@@ -34,7 +34,7 @@ public partial class QbtRssViewModel : ObservableRecipient, INavigationAware, IR
     [RelayCommand]
     private async Task OnAddRssToQbt()
     {
-        if (BangumiName.Length == 0 || RssFeedPath.Length == 0) return;
+        if (BangumiName.Length == 0 || RssFeedPath.Length == 0 || GlobalConfig.Instance.QbtDownloadPath.Length == 0) return;
 
         var folderPath = Path.Combine(GlobalConfig.Instance.QbtDownloadPath, BangumiName);
         if (!Directory.Exists(folderPath))
@@ -64,7 +64,7 @@ public partial class QbtRssViewModel : ObservableRecipient, INavigationAware, IR
             EpisodeFilter = "",
             SmartFilter = false,
             PreviouslyMatchedEpisodes = [],
-            AffectedFeeds = [Path.Combine(RssFeedPath,"Season 1")],
+            AffectedFeeds = [Path.Combine(RssFeedPath, "Season 1")],
             IgnoreDays = 0,
             LastMatch = "",
             AddPaused = false,
