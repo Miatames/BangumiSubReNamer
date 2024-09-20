@@ -64,12 +64,12 @@ public partial class QbtRssViewModel : ObservableRecipient, INavigationAware, IR
             EpisodeFilter = "",
             SmartFilter = false,
             PreviouslyMatchedEpisodes = [],
-            AffectedFeeds = [Path.Combine(RssFeedPath, "Season 1")],
+            AffectedFeeds = [RssFeedPath],
             IgnoreDays = 0,
             LastMatch = "",
             AddPaused = false,
             AssignedCategory = "Bangumi",
-            SavePath = folderPath
+            SavePath = Path.Combine(folderPath,"Season 1")
         };
 
         var addRuleName = RssRuleName.Length == 0 ? BangumiName : RssRuleName;
