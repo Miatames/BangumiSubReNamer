@@ -123,6 +123,9 @@
                         Orientation="Horizontal"
                         HorizontalAlignment="Right"
                         Margin="5">
+                <CheckBox x:Name="UI_IsConvAssToSrt"
+                          IsChecked="{Binding ViewModel.IsConvAssToSrt,Mode=TwoWay}"
+                          Content="Ass转Srt" Margin="5,0,-20,0" />
                 <CheckBox x:Name="UI_IsMoveFile"
                           IsChecked="{Binding ViewModel.IsMoveFile,Mode=TwoWay}"
                           Content="移动文件" Margin="5,0,-20,0" />
@@ -143,6 +146,11 @@
               Visibility="{Binding ViewModel.IsMovingProcess,Mode=TwoWay}"
               d:IsHidden="True">
             <ui:ProgressRing IsIndeterminate="True" />
+            <TextBlock Text="{Binding ViewModel.ProcessText}"
+                       HorizontalAlignment="Center"
+                       VerticalAlignment="Center"
+                       Foreground="{ui:ThemeResource AccentTextFillColorDisabledBrush}"
+                       Margin="0,100,0,0" />
         </Grid>
     </Grid>
 </Page>

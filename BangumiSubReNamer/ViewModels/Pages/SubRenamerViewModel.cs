@@ -1,7 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
+using Ass2Srt;
 using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
 using BangumiSubReNamer.Views.Pages;
@@ -12,7 +14,7 @@ using Wpf.Ui.Controls;
 
 namespace BangumiSubReNamer.ViewModels.Pages
 {
-    public partial class SubRenamerViewModel : ObservableObject, INavigationAware ,IDropTarget
+    public partial class SubRenamerViewModel : ObservableObject, INavigationAware, IDropTarget
     {
         public SubRenamerViewModel(INavigationService navigationService)
         {
@@ -30,7 +32,9 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private ObservableCollection<string> addExtensions = new();
         [ObservableProperty] private string selectAddExtension = "";
         [ObservableProperty] private bool isMoveFile = true;
+        [ObservableProperty] private bool isConvAssToSrt = true;
         [ObservableProperty] private Visibility isMovingProcess = Visibility.Hidden;
+        [ObservableProperty] private string processText = "";
 
         private List<DataFilePath> sourceFileSelected = new();
         private List<DataFilePath> showSubFileSelected = new();
@@ -232,38 +236,132 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 return;
             }
 
-            IsMovingProcess = Visibility.Visible;
-            await Task.Run(() =>
+            //直接ass转srt
+            if (SourceFilePaths.Count <= 0 && ShowSubFilePaths.Count > 0 && IsConvAssToSrt)
             {
-                for (int i = 0; i < Math.Min(ShowSubFilePaths.Count, SourceFilePaths.Count); i++)
+                IsMovingProcess = Visibility.Visible;
+                ProcessText = "";
+                await Task.Run(() =>
                 {
-                    if (!File.Exists(ShowSubFilePaths[i].FilePath)) continue;
-                    if (IsMoveFile)
+                    for (var i = 0; i < ShowSubFilePaths.Count; i++)
                     {
-                        var newPath = Path.GetDirectoryName(SourceFilePaths[i].FilePath);
-                        var subFileName = Path.GetFileNameWithoutExtension(SourceFilePaths[i].FilePath);
-                        var newFile = newPath + "\\" + subFileName + SelectAddExtension +
-                                      Path.GetExtension(ShowSubFilePaths[i].FilePath);
+                        var dataFilePath = ShowSubFilePaths[i];
+                        if (Path.GetExtension(dataFilePath.FileName) != ".ass") return;
 
-                        File.Copy(ShowSubFilePaths[i].FilePath, newFile, true);
+                        var assReader = new AssReader(dataFilePath.FilePath);
+                        if (assReader.IsValid())
+                        {
+                            var srtDialogues = assReader.ReadDialogues();
+                            var assAnalyzerForSrt = new AssAnalyzerForSrt(srtDialogues, 2, false);
+                            var srtLines = assAnalyzerForSrt.Analyze();
+                            var fileDirNoAss = IsSelectByExtension
+                                ? dataFilePath.FilePath.Replace(SelectExtensions[CurrentExtension], "")
+                                : dataFilePath.FilePath.Replace(".ass", "");
 
-                        Console.WriteLine(newFile);
+                            var fileStream = new FileStream(fileDirNoAss + SelectAddExtension + ".srt", FileMode.OpenOrCreate);
+                            var writer = new StreamWriter(fileStream, Encoding.UTF8);
+                            foreach (var srtLine in srtLines)
+                            {
+                                writer.WriteLine(srtLine);
+                            }
+
+                            writer.Flush();
+                            writer.Close();
+                        }
+
+
+                        ProcessText = $"{i + 1}/{ShowSubFilePaths.Count}";
                     }
-                    else
+                });
+            }
+            //根据视频重命名
+            else if (SourceFilePaths.Count > 0 && ShowSubFilePaths.Count > 0)
+            {
+                IsMovingProcess = Visibility.Visible;
+                ProcessText = "";
+                await Task.Run(() =>
+                {
+                    var count = Math.Min(ShowSubFilePaths.Count, SourceFilePaths.Count);
+                    for (int i = 0; i < count; i++)
                     {
-                        var newPath = Path.GetDirectoryName(ShowSubFilePaths[i].FilePath);
-                        var subFileName = Path.GetFileNameWithoutExtension(SourceFilePaths[i].FilePath);
-                        var newFile = newPath + "\\" + subFileName + SelectAddExtension +
-                                      Path.GetExtension(ShowSubFilePaths[i].FilePath);
+                        if (!File.Exists(ShowSubFilePaths[i].FilePath)) continue;
+                        if (IsMoveFile)
+                        {
+                            var newPath = Path.GetDirectoryName(SourceFilePaths[i].FilePath) ?? "";
+                            var subFileName = Path.GetFileNameWithoutExtension(SourceFilePaths[i].FilePath);
+                            if (IsConvAssToSrt)
+                            {
+                                var dataFilePath = ShowSubFilePaths[i];
+                                if (Path.GetExtension(dataFilePath.FileName) != ".ass") return;
 
-                        File.Move(ShowSubFilePaths[i].FilePath, newFile, true);
+                                var assReader = new AssReader(dataFilePath.FilePath);
+                                if (assReader.IsValid())
+                                {
+                                    var srtDialogues = assReader.ReadDialogues();
+                                    var assAnalyzerForSrt = new AssAnalyzerForSrt(srtDialogues, 2, false);
+                                    var srtLines = assAnalyzerForSrt.Analyze();
 
-                        Console.WriteLine(newFile);
+                                    var fileStream = new FileStream(Path.Combine(newPath, subFileName) + SelectAddExtension + ".srt", FileMode.OpenOrCreate);
+                                    var writer = new StreamWriter(fileStream, Encoding.UTF8);
+                                    foreach (var srtLine in srtLines)
+                                    {
+                                        writer.WriteLine(srtLine);
+                                    }
+
+                                    writer.Flush();
+                                    writer.Close();
+                                }
+                            }
+                            else
+                            {
+
+                                var newFile = Path.Combine(newPath, subFileName) + SelectAddExtension + Path.GetExtension(ShowSubFilePaths[i].FilePath);
+
+                                File.Copy(ShowSubFilePaths[i].FilePath, newFile, true);
+                                Console.WriteLine(newFile);
+                            }
+                        }
+                        else
+                        {
+                            var newPath = Path.GetDirectoryName(ShowSubFilePaths[i].FilePath) ?? "";
+                            var subFileName = Path.GetFileNameWithoutExtension(SourceFilePaths[i].FilePath);
+                            if (IsConvAssToSrt)
+                            {
+                                var dataFilePath = ShowSubFilePaths[i];
+                                if (Path.GetExtension(dataFilePath.FileName) != ".ass") return;
+
+                                var assReader = new AssReader(dataFilePath.FilePath);
+                                if (assReader.IsValid())
+                                {
+                                    var srtDialogues = assReader.ReadDialogues();
+                                    var assAnalyzerForSrt = new AssAnalyzerForSrt(srtDialogues, 2, false);
+                                    var srtLines = assAnalyzerForSrt.Analyze();
+
+                                    var fileStream = new FileStream(Path.Combine(newPath, subFileName) + SelectAddExtension + ".srt", FileMode.OpenOrCreate);
+                                    var writer = new StreamWriter(fileStream, Encoding.UTF8);
+                                    foreach (var srtLine in srtLines)
+                                    {
+                                        writer.WriteLine(srtLine);
+                                    }
+
+                                    writer.Flush();
+                                    writer.Close();
+                                }
+                            }
+                            else
+                            {
+                                var newFile = Path.Combine(newPath, subFileName) + SelectAddExtension + Path.GetExtension(ShowSubFilePaths[i].FilePath);
+                                File.Move(ShowSubFilePaths[i].FilePath, newFile, true);
+                                Console.WriteLine(newFile);
+                            }
+                        }
+
+                        ProcessText = $"{i + 1}/{count}";
                     }
-                }
 
-                // Thread.Sleep(500);
-            });
+                    // Thread.Sleep(500);
+                });
+            }
 
             for (int i = SubFilePaths.Count - 1; i >= 0; i--)
             {
@@ -293,7 +391,9 @@ namespace BangumiSubReNamer.ViewModels.Pages
             // Height = GlobalConfig.Instance.Height - 70;
         }
 
-        public void OnNavigatedFrom() { }
+        public void OnNavigatedFrom()
+        {
+        }
 
         public void DragOver(IDropInfo dropInfo)
         {

@@ -3,7 +3,7 @@
 字幕批量重命名、使用BangumiApi获取视频信息并生成nfo文件
 
 ### 测试环境：
-Win11 .net8.0  JetBrains Rider 2024.1
+Win11 .net8.0  JetBrains Rider 2024.2
 
 ### 相关：
 [WPF-UI](https://github.com/lepoco/wpfui)  
@@ -11,4 +11,5 @@ Win11 .net8.0  JetBrains Rider 2024.1
 [BangumiApi](https://github.com/bangumi/api)  
 [jellyfin-plugin-bangumi](https://github.com/kookxiang/jellyfin-plugin-bangumi)  
 [gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)  
-[fluid](https://github.com/sebastienros/fluid)
+[fluid](https://github.com/sebastienros/fluid)  
+[AssToolkit](https://github.com/dxcheng25/AssToolkit)
