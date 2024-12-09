@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Serialization;
+using FFMpegCore;
 
 namespace BangumiSubReNamer.Models;
 
@@ -127,7 +128,7 @@ public static class ExtensionTools
 
         return rootpath + newStr;
     }
-    
+
     public static void RunCreateNfoFile<T>(T info, string filePath)
     {
         try
@@ -147,9 +148,14 @@ public static class ExtensionTools
         }
     }
 
+    public static void ConvertAssFileToSrt(string assFilePath, string srtFilePath)
+    {
+        FFMpegArguments.FromFileInput(assFilePath).OutputToFile(srtFilePath, false).ProcessSynchronously();
+    }
+
     [DllImport("Kernel32", CharSet = CharSet.Unicode)]
     public static extern bool CreateHardLink(string linkName, string sourceName, IntPtr attribute);
-    
+
     [DllImport("shlwapi.dll", CharSet = CharSet.Unicode)]
     public static extern int StrCmpLogicalW(string psz1, string psz2);
 }

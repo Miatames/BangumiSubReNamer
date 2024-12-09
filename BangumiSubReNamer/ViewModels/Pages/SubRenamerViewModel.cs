@@ -3,11 +3,11 @@ using System.Collections.ObjectModel;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
-using Ass2Srt;
 using BangumiSubReNamer.Models;
 using BangumiSubReNamer.Services;
 using BangumiSubReNamer.Views.Pages;
 using CommunityToolkit.Mvvm.Messaging;
+using FFMpegCore;
 using GongSolutions.Wpf.DragDrop;
 using Wpf.Ui;
 using Wpf.Ui.Controls;
@@ -236,6 +236,17 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 return;
             }
 
+            if (IsConvAssToSrt)
+            {
+                var ffmpegPath = GlobalFFOptions.GetFFMpegBinaryPath();
+                if (string.IsNullOrEmpty(ffmpegPath) || !Directory.Exists(ffmpegPath))
+                {
+                    WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
+                        new DataSnackbarMessage("错误", $"无法找到FFmpeg: [{ffmpegPath}]", ControlAppearance.Caution));
+                }
+                return;
+            }
+
             //直接ass转srt
             if (SourceFilePaths.Count <= 0 && ShowSubFilePaths.Count > 0 && IsConvAssToSrt)
             {
@@ -245,32 +256,17 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 {
                     for (var i = 0; i < ShowSubFilePaths.Count; i++)
                     {
-                        var dataFilePath = ShowSubFilePaths[i];
-                        if (Path.GetExtension(dataFilePath.FileName) != ".ass") return;
-
-                        var assReader = new AssReader(dataFilePath.FilePath);
-                        if (assReader.IsValid())
-                        {
-                            var srtDialogues = assReader.ReadDialogues();
-                            var assAnalyzerForSrt = new AssAnalyzerForSrt(srtDialogues, 2, false);
-                            var srtLines = assAnalyzerForSrt.Analyze();
-                            var fileDirNoAss = IsSelectByExtension
-                                ? dataFilePath.FilePath.Replace(SelectExtensions[CurrentExtension], "")
-                                : dataFilePath.FilePath.Replace(".ass", "");
-
-                            var fileStream = new FileStream(fileDirNoAss + SelectAddExtension + ".srt", FileMode.OpenOrCreate);
-                            var writer = new StreamWriter(fileStream, Encoding.UTF8);
-                            foreach (var srtLine in srtLines)
-                            {
-                                writer.WriteLine(srtLine);
-                            }
-
-                            writer.Flush();
-                            writer.Close();
-                        }
-
-
                         ProcessText = $"{i + 1}/{ShowSubFilePaths.Count}";
+
+                        var dataFilePath = ShowSubFilePaths[i];
+                        if (Path.GetExtension(dataFilePath.FileName) != ".ass") continue;
+
+                        var fileDirNoAss = IsSelectByExtension
+                            ? dataFilePath.FilePath.Replace(SelectExtensions[CurrentExtension], "")
+                            : dataFilePath.FilePath.Replace(".ass", "");
+                        var newFilePath = fileDirNoAss + SelectAddExtension + ".srt";
+
+                        ExtensionTools.ConvertAssFileToSrt(dataFilePath.FilePath, newFilePath);
                     }
                 });
             }
@@ -284,6 +280,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     var count = Math.Min(ShowSubFilePaths.Count, SourceFilePaths.Count);
                     for (int i = 0; i < count; i++)
                     {
+                        ProcessText = $"{i + 1}/{count}";
+
                         if (!File.Exists(ShowSubFilePaths[i].FilePath)) continue;
                         if (IsMoveFile)
                         {
@@ -292,29 +290,13 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             if (IsConvAssToSrt)
                             {
                                 var dataFilePath = ShowSubFilePaths[i];
-                                if (Path.GetExtension(dataFilePath.FileName) != ".ass") return;
+                                if (Path.GetExtension(dataFilePath.FileName) != ".ass") continue;
 
-                                var assReader = new AssReader(dataFilePath.FilePath);
-                                if (assReader.IsValid())
-                                {
-                                    var srtDialogues = assReader.ReadDialogues();
-                                    var assAnalyzerForSrt = new AssAnalyzerForSrt(srtDialogues, 2, false);
-                                    var srtLines = assAnalyzerForSrt.Analyze();
-
-                                    var fileStream = new FileStream(Path.Combine(newPath, subFileName) + SelectAddExtension + ".srt", FileMode.OpenOrCreate);
-                                    var writer = new StreamWriter(fileStream, Encoding.UTF8);
-                                    foreach (var srtLine in srtLines)
-                                    {
-                                        writer.WriteLine(srtLine);
-                                    }
-
-                                    writer.Flush();
-                                    writer.Close();
-                                }
+                                var newFilePath = Path.Combine(newPath, subFileName) + SelectAddExtension + ".srt";
+                                ExtensionTools.ConvertAssFileToSrt(dataFilePath.FilePath, newFilePath);
                             }
                             else
                             {
-
                                 var newFile = Path.Combine(newPath, subFileName) + SelectAddExtension + Path.GetExtension(ShowSubFilePaths[i].FilePath);
 
                                 File.Copy(ShowSubFilePaths[i].FilePath, newFile, true);
@@ -328,25 +310,10 @@ namespace BangumiSubReNamer.ViewModels.Pages
                             if (IsConvAssToSrt)
                             {
                                 var dataFilePath = ShowSubFilePaths[i];
-                                if (Path.GetExtension(dataFilePath.FileName) != ".ass") return;
+                                if (Path.GetExtension(dataFilePath.FileName) != ".ass") continue;
 
-                                var assReader = new AssReader(dataFilePath.FilePath);
-                                if (assReader.IsValid())
-                                {
-                                    var srtDialogues = assReader.ReadDialogues();
-                                    var assAnalyzerForSrt = new AssAnalyzerForSrt(srtDialogues, 2, false);
-                                    var srtLines = assAnalyzerForSrt.Analyze();
-
-                                    var fileStream = new FileStream(Path.Combine(newPath, subFileName) + SelectAddExtension + ".srt", FileMode.OpenOrCreate);
-                                    var writer = new StreamWriter(fileStream, Encoding.UTF8);
-                                    foreach (var srtLine in srtLines)
-                                    {
-                                        writer.WriteLine(srtLine);
-                                    }
-
-                                    writer.Flush();
-                                    writer.Close();
-                                }
+                                var newFilePath = Path.Combine(newPath, subFileName) + SelectAddExtension + ".srt";
+                                ExtensionTools.ConvertAssFileToSrt(dataFilePath.FilePath, newFilePath);
                             }
                             else
                             {
@@ -355,11 +322,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                                 Console.WriteLine(newFile);
                             }
                         }
-
-                        ProcessText = $"{i + 1}/{count}";
                     }
-
-                    // Thread.Sleep(500);
                 });
             }
 
@@ -391,9 +354,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             // Height = GlobalConfig.Instance.Height - 70;
         }
 
-        public void OnNavigatedFrom()
-        {
-        }
+        public void OnNavigatedFrom() { }
 
         public void DragOver(IDropInfo dropInfo)
         {

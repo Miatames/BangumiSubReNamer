@@ -24,7 +24,8 @@ public class BangumiApiConfig
         bgmApiClient = new HttpClient();
         bgmApiClient.DefaultRequestHeaders.Add("Accept", "application/json");
         bgmApiClient.DefaultRequestHeaders.Add("User-Agent",
-            "BangumiSubReNamer/0.4 (https://github.com/Miatames/BangumiSubReNamer)");
+            "BangumiSubReNamer/0.5 (https://github.com/Miatames/BangumiSubReNamer)");
+        bgmApiClient.Timeout = TimeSpan.FromSeconds(5);
 
         tmdbApiClient = new HttpClient();
         tmdbApiClient.DefaultRequestHeaders.Add("Accept", "application/json");
