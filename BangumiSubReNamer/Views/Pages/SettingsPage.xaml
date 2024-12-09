@@ -38,6 +38,8 @@
             <ui:TextBox Text="{Binding ViewModel.QbtWebUrl}" />
             <Label Margin="0,10,0,0" Content="qBittorrent下载路径:" />
             <ui:TextBox Text="{Binding ViewModel.QbtDownloadPath}" />
+            <Label Margin="0,10,0,0" Content="FFmpeg文件夹路径:" />
+            <ui:TextBox Text="{Binding ViewModel.FfmpegPath}" />
 
             <ui:Button Content="保存设置"
                        HorizontalAlignment="Right"

@@ -23,6 +23,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
         [ObservableProperty] private string movieFileTemplate;
         [ObservableProperty] private string qbtWebUrl;
         [ObservableProperty] private string qbtDownloadPath;
+        [ObservableProperty] private string ffmpegPath;
 
         [RelayCommand]
         private void OnSetReNamerConfig()
@@ -44,6 +45,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             GlobalConfig.Instance.CreateFileNameTemplateMovie = MovieFileTemplate;
             GlobalConfig.Instance.QbtWebUrl = QbtWebUrl;
             GlobalConfig.Instance.QbtDownloadPath = QbtDownloadPath;
+            GlobalConfig.Instance.FFmpegBinariesPath = FfmpegPath;
             GlobalConfig.Instance.WriteConfig();
 
             WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("更新设置", "", ControlAppearance.Success));
@@ -60,6 +62,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             MovieFileTemplate = GlobalConfig.Instance.CreateFileNameTemplateMovie;
             QbtWebUrl = GlobalConfig.Instance.QbtWebUrl;
             QbtDownloadPath = GlobalConfig.Instance.QbtDownloadPath;
+            FfmpegPath = GlobalConfig.Instance.FFmpegBinariesPath;
         }
 
         public void OnNavigatedFrom()
