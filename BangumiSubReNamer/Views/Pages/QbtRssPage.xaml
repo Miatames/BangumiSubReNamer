@@ -40,11 +40,15 @@
             <ui:TextBox Text="{Binding ViewModel.RssRuleName}"
                         PlaceholderText="{Binding ViewModel.BangumiName}" />
 
-            <ui:Button Content="添加订阅"
-                       HorizontalAlignment="Right"
-                       Width="120" Height="32" Margin="0,10"
-                       Appearance="Primary"
-                       Command="{Binding ViewModel.AddRssToQbtCommand}" />
+            <StackPanel HorizontalAlignment="Right" Orientation="Horizontal" Margin="0,20,0,0">
+                <CheckBox Content="添加后启用下载规则"
+                          Margin="0,0,30,0"
+                          IsChecked="{Binding ViewModel.EnableRule,Mode=TwoWay}" />
+                <ui:Button Content="添加订阅"
+                           Width="120" Height="32"
+                           Appearance="Primary"
+                           Command="{Binding ViewModel.AddRssToQbtCommand}" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

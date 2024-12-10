@@ -20,6 +20,7 @@ public partial class QbtRssViewModel : ObservableRecipient, INavigationAware, IR
     [ObservableProperty] private string rssFeedPath = "";
     [ObservableProperty] private string rssRuleName = "";
     [ObservableProperty] private bool isUseNameCn = true;
+    [ObservableProperty] private bool enableRule = true;
 
     private DataSubjectsInfo? dataSubjectsInfo = null;
 
@@ -57,7 +58,7 @@ public partial class QbtRssViewModel : ObservableRecipient, INavigationAware, IR
 
         var dataAddRssRule = new DataAddRssRule()
         {
-            Enabled = false,
+            Enabled = EnableRule,
             MustContain = "",
             MustNotContain = "",
             UseRegex = false,
@@ -69,18 +70,27 @@ public partial class QbtRssViewModel : ObservableRecipient, INavigationAware, IR
             LastMatch = "",
             AddPaused = false,
             AssignedCategory = "Bangumi",
-            SavePath = Path.Combine(folderPath,"Season 1")
+            SavePath = Path.Combine(folderPath, "Season 1")
         };
 
         var addRuleName = RssRuleName.Length == 0 ? BangumiName : RssRuleName;
 
-        await QbtApiConfig.Instance.QbtApi_AddFeed(RssFeedPath, addRuleName);
-        await QbtApiConfig.Instance.QbtApi_AddRule(dataAddRssRule, addRuleName);
+        bool addFeedSuccess = await QbtApiConfig.Instance.QbtApi_AddFeed(RssFeedPath, addRuleName);
+        bool addRuleSuccess = await QbtApiConfig.Instance.QbtApi_AddRule(dataAddRssRule, addRuleName);
 
-        WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
-            new DataSnackbarMessage("添加Rss：",
-                $"{addRuleName} [{RssFeedPath}]",
-                ControlAppearance.Success));
+        if (addFeedSuccess && addRuleSuccess)
+        {
+            WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
+                new DataSnackbarMessage("添加Rss：",
+                    $"{addRuleName} [{RssFeedPath}]",
+                    ControlAppearance.Success));
+        }
+        else
+        {
+            WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("添加Rss失败：",
+                $"添加订阅：{addFeedSuccess}  添加下载规则：{addRuleSuccess}",
+                ControlAppearance.Caution));
+        }
     }
 
     [RelayCommand]
@@ -89,11 +99,7 @@ public partial class QbtRssViewModel : ObservableRecipient, INavigationAware, IR
         if (dataSubjectsInfo != null) BangumiName = IsUseNameCn ? dataSubjectsInfo.NameCn : dataSubjectsInfo.Name;
     }
 
-    public void OnNavigatedTo()
-    {
-    }
+    public void OnNavigatedTo() { }
 
-    public void OnNavigatedFrom()
-    {
-    }
+    public void OnNavigatedFrom() { }
 }
