@@ -351,7 +351,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 }
                 else if (Regex.IsMatch(Path.GetExtension(filePath), subFileEndsRegex))
                 {
-                    WeakReferenceMessenger.Default.Send<DataFilePath>(addDataFilePath);
+                    App.GetService<SubRenamerViewModel>()?.OnDropSubFile(addDataFilePath);
                 }
                 else
                 {

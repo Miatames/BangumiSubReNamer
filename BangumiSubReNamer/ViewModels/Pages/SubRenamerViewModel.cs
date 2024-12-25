@@ -352,6 +352,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
             // IsMovingProcess = Visibility.Hidden;
             // Height = GlobalConfig.Instance.Height - 70;
+            AddShowSubFile();
         }
 
         public void OnNavigatedFrom() { }
@@ -447,6 +448,19 @@ namespace BangumiSubReNamer.ViewModels.Pages
 
                     break;
                 }
+            }
+        }
+
+        //其他页面拖入字幕文件后调用
+        public void OnDropSubFile(DataFilePath DropSubFile)
+        {
+            if (Regex.IsMatch(Path.GetExtension(DropSubFile.FilePath), subFileEndsRegex))
+            {
+                SubFilePaths.AddUnique(DropSubFile);
+                var addExtensionName = DropSubFile.FileName.GetExtensionName(subExtensionRegex);
+                SelectExtensions.AddUnique(addExtensionName);
+
+                if (CurrentExtension < 0) CurrentExtension = 0;
             }
         }
     }
