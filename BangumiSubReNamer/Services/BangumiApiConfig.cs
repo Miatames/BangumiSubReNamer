@@ -174,6 +174,30 @@ public class BangumiApiConfig
         }
     }
 
+    public string NewFolderName(DataEpisodesInfo info)
+    {
+        var folderName = "文件夹";
+
+        var templateFolderName = GlobalConfig.Instance.CreateFolderNameTemplate;
+
+        var data = new
+        {
+            SubjectId = info.SubjectId,
+            SubjectName = info.SubjectName,
+            SubjectNameCn = info.SubjectNameCn,
+            Year = info.Year
+        };
+
+        if (fileNameParser.TryParse(templateFolderName, out var template))
+        {
+            var context = new TemplateContext(data);
+
+            folderName = template.Render(context);
+        }
+
+        return folderName.RemoveInvalidFileNameChar();
+    }
+
     public string BangumiNewFileName(DataEpisodesInfo info, string sourceFileName, int padLeft)
     {
         var fileName = sourceFileName;
@@ -200,7 +224,7 @@ public class BangumiApiConfig
             fileName = template.Render(context) + extensionName;
         }
 
-        return fileName;
+        return fileName.RemoveInvalidFileNameChar();
     }
 
     public string MovieNewFileName(DataEpisodesInfo info, string sourceFileName)
@@ -233,6 +257,6 @@ public class BangumiApiConfig
             }
         }
 
-        return fileName;
+        return fileName.RemoveInvalidFileNameChar();
     }
 }

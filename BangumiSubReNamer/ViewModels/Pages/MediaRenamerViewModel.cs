@@ -118,7 +118,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         results = await BangumiApiConfig.Instance.BangumiApi_Search(searchStr);
                     }
 
-                    if (results == null || results.Count <= 0)
+                    if (results.Count <= 0)
                     {
                         WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(new DataSnackbarMessage("搜索无结果",
                             $"搜索：{searchStr}",
@@ -180,7 +180,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             NewFileList.Clear();
 
             //集数补0
-            var padleft = Math.Min(SourceFileList.Count, EpisodesInfoList.Count).ToString().Length;
+            var padLeft = Math.Min(SourceFileList.Count, EpisodesInfoList.Count).ToString().Length;
 
             for (int i = 0; i < Math.Min(SourceFileList.Count, EpisodesInfoList.Count); i++)
             {
@@ -196,19 +196,19 @@ namespace BangumiSubReNamer.ViewModels.Pages
                     case 0:
                         if (EpisodesInfoList[i].Type == 0)
                         {
-                            newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padleft);
+                            newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padLeft);
                             newPath = Path.Combine(
                                 targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)),
-                                $"{EpisodesInfoList[i].SubjectNameCn} ({EpisodesInfoList[i].Year})",
-                                "Season 1");
+                                BangumiApiConfig.Instance.NewFolderName(EpisodesInfoList[i]),
+                                "Season 1").RemoveInvalidPathNameChar();
                         }
                         else
                         {
-                            newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padleft);
+                            newName = BangumiApiConfig.Instance.BangumiNewFileName(EpisodesInfoList[i], sourceName, padLeft);
                             newPath = Path.Combine(
                                 targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)),
-                                $"{EpisodesInfoList[i].SubjectNameCn} ({EpisodesInfoList[i].Year})",
-                                "SP");
+                                BangumiApiConfig.Instance.NewFolderName(EpisodesInfoList[i]),
+                                "SP").RemoveInvalidPathNameChar();
                         }
 
                         break;
@@ -216,13 +216,12 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         newName = BangumiApiConfig.Instance.MovieNewFileName(EpisodesInfoList[i], sourceName);
                         newPath = Path.Combine(
                             targetFolder.Replace("{RootPath}", Path.GetPathRoot(sourcePath)),
-                            $"{EpisodesInfoList[i].SubjectNameCn} ({EpisodesInfoList[i].Year})");
+                            BangumiApiConfig.Instance.NewFolderName(EpisodesInfoList[i])).RemoveInvalidPathNameChar();
                         break;
                 }
 
                 //排除非法的路径和文件名字符
-                NewFileList.Add(new DataFilePath(Path.Combine(newPath.RemoveInvalidPathNameChar(), newName.RemoveInvalidFileNameChar()),
-                    newName.RemoveInvalidFileNameChar()));
+                NewFileList.Add(new DataFilePath(Path.Combine(newPath, newName), newName));
             }
         }
 
@@ -336,9 +335,7 @@ namespace BangumiSubReNamer.ViewModels.Pages
             // Height = GlobalConfig.Instance.Height - 70;
         }
 
-        public void OnNavigatedFrom()
-        {
-        }
+        public void OnNavigatedFrom() { }
 
         public void AddDropFile(List<string> filePathArrayOrder)
         {
@@ -358,16 +355,16 @@ namespace BangumiSubReNamer.ViewModels.Pages
                 }
                 else
                 {
-                    Console.WriteLine($"unknow add file: {filePath}");
+                    Console.WriteLine($"unknown add file: {filePath}");
                     WeakReferenceMessenger.Default.Send<DataSnackbarMessage>(
                         new DataSnackbarMessage("未知文件类型" + Path.GetExtension(filePath), filePath, ControlAppearance.Caution));
                 }
             }
 
-            GetAniInfo(dictList);
+            Task.Run(() => GetAniInfo(dictList));
         }
 
-        private void GetAniInfo(List<string> strList)
+        private async Task GetAniInfo(List<string> strList)
         {
             string title = "";
 
@@ -382,6 +379,8 @@ namespace BangumiSubReNamer.ViewModels.Pages
                         {
                             Console.WriteLine(element.Value);
                             title = element.Value.RemoveInvalidFileNameChar();
+                            var titleOrigin = await BangumiApiConfig.Instance.TmdbApi_Search(title);
+                            if (!string.IsNullOrEmpty(titleOrigin)) title = titleOrigin;
                         }
                     }
                 }

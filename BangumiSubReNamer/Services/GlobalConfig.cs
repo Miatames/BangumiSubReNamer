@@ -21,6 +21,7 @@ public class GlobalConfig
 
     public DataReNamerConfig ReNamerConfig;
     public string OutFilePath;
+    public string CreateFolderNameTemplate;
     public string CreateFileNameTemplateBangumi;
     public string CreateFileNameTemplateMovie;
     public string QbtWebUrl;
@@ -40,6 +41,7 @@ public class GlobalConfig
                 subFileExtensionRegex: configuration.AppSettings.Settings["字幕排除"].Value);
 
             OutFilePath = configuration.AppSettings.Settings["硬链接默认路径"].Value;
+            CreateFolderNameTemplate = configuration.AppSettings.Settings["文件夹名模板"].Value;
             CreateFileNameTemplateBangumi = configuration.AppSettings.Settings["剧集文件名模板"].Value;
             CreateFileNameTemplateMovie = configuration.AppSettings.Settings["电影文件名模板"].Value;
             QbtWebUrl = configuration.AppSettings.Settings["qBittorrent网页地址"].Value;
@@ -65,6 +67,7 @@ public class GlobalConfig
             configuration.AppSettings.Settings["默认扩展名"].Value = ReNamerConfig.DefaultAddExtensions;
             configuration.AppSettings.Settings["字幕排除"].Value = ReNamerConfig.SubFileExtensionRegex;
             configuration.AppSettings.Settings["硬链接默认路径"].Value = OutFilePath;
+            configuration.AppSettings.Settings["文件夹名模板"].Value = CreateFolderNameTemplate;
             configuration.AppSettings.Settings["剧集文件名模板"].Value = CreateFileNameTemplateBangumi;
             configuration.AppSettings.Settings["电影文件名模板"].Value = CreateFileNameTemplateMovie;
             configuration.AppSettings.Settings["qBittorrent网页地址"].Value = QbtWebUrl;
