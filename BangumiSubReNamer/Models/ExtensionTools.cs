@@ -103,30 +103,14 @@ public static class ExtensionTools
 
     public static string RemoveInvalidFileNameChar(this string str)
     {
-        // var invalidFileNameChar = Path.GetInvalidFileNameChars();
-        // return invalidFileNameChar.Aggregate(str, (current, c) => current.Replace(c.ToString(), string.Empty));
-
-        // var invalidFileNameStr = @"[\\\/\^*×―$%~@#$…%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
-        var invalidFileNameStr = @"[\\\/*??:""|]";
-        return Regex.Replace(str, invalidFileNameStr, @" ");
+        var invalidFileNameChar = Path.GetInvalidFileNameChars();
+        return invalidFileNameChar.Aggregate(str, (current, c) => current.Replace(c.ToString(), " "));
     }
 
     public static string RemoveInvalidPathNameChar(this string str)
     {
-        // var invalidPathChars = Path.GetInvalidPathChars();
-        // return invalidPathChars.Aggregate(str, (current, c) => current.Replace(c.ToString(), string.Empty));
-
-        var rootpath = Path.GetPathRoot(str);
-        if (!string.IsNullOrEmpty(rootpath))
-        {
-            str = str.Replace(rootpath, "");
-        }
-
-        // var invalidPathNameStr = @"[\^*×―$%~@#$…%￥+=<>《》!！??？:：•'`·、。，；,;""‘’“”]";
-        var invalidPathNameStr = @"[*??:""|]";
-        var newStr = Regex.Replace(str, invalidPathNameStr, @" ");
-
-        return rootpath + newStr;
+        var invalidPathChars = Path.GetInvalidPathChars();
+        return invalidPathChars.Aggregate(str, (current, c) => current.Replace(c.ToString(), " "));
     }
 
     public static void RunCreateNfoFile<T>(T info, string filePath)
