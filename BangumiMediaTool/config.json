@@ -1,0 +1,13 @@
+{
+	"RegexMatchSubtitleFiles": ".ass|.srt",
+	"RegexRemoveSubtitleFiles": "\\[|\\]|\\(|\\)|[\\u4e00-\\u9fa5]",
+	"RegexMatchMediaFiles": ".mp4|.mkv|.flv",
+	"DefaultAddSubtitleFilesExtensions": "|.chs|.cht",
+	"DefaultHardLinkPath": "Media",
+	"CreateFolderNameTemplate": "{{SubjectNameCn}} ({{Year}})",
+	"CreateBangumiFileNameTemplate": "{{SubjectNameCn}} - {{EpisodesSort}} - {{EpisodeNameCn}} - {{SourceFileName}}",
+	"CreateMovieFileNameTemplate": "{{SourceFileName}}",
+	"QbtWebServerUrl": "http://127.0.0.1:8080/",
+	"QbtDefaultDownloadPath": "G:\\Media",
+	"FFmpegPath": "C:\\Users\\Administrator\\Application\\ffmpeg-6.0-full_build\\bin"
+}

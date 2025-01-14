@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0-windows</TargetFramework>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>wpfui-icon.ico</ApplicationIcon>
+        <UseWPF>true</UseWPF>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Content Include="wpfui-icon.ico"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="AnitomySharp.NET6" Version="0.5.1" />
+        <PackageReference Include="Costura.Fody" Version="6.0.0">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="FFMpegCore" Version="5.1.0"/>
+        <PackageReference Include="Fluid.Core" Version="2.16.0"/>
+        <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0"/>
+        <PackageReference Include="Microsoft.Xaml.Behaviors.Wpf" Version="1.1.135"/>
+        <PackageReference Include="NaturalSort.Extension" Version="4.3.0" />
+        <PackageReference Include="NLog.WPF" Version="1.2.6"/>
+        <PackageReference Include="WPF-UI" Version="3.0.5"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Remove="Assets\wpfui-icon-256.png"/>
+        <None Remove="Assets\wpfui-icon-1024.png"/>
+        <None Update="config.json">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+        <None Update="NLog.config">
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Resource Include="Assets\wpfui-icon-256.png"/>
+        <Resource Include="Assets\wpfui-icon-1024.png"/>
+    </ItemGroup>
+<!--
+    <ItemGroup>
+      <Page Update="Views\Pages\ReNameFilePage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
+    </ItemGroup>-->
+
+</Project>
