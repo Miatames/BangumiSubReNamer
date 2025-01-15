@@ -23,7 +23,7 @@ public class GlobalConfig
         var jsonString = File.ReadAllText("config.json");
         AppConfig = JsonSerializer.Deserialize<AppConfig>(jsonString) ?? new AppConfig();
         Logs.LogInfo(jsonString);
-        GlobalFFOptions.Configure(new FFOptions(){BinaryFolder = AppConfig.FFmpegPath});
+        GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = AppConfig.FFmpegPath });
     }
 
     public void WriteConfig(AppConfig setConfig)
@@ -31,6 +31,6 @@ public class GlobalConfig
         AppConfig = setConfig;
         var jsonString = JsonSerializer.Serialize(AppConfig);
         File.WriteAllText("config.json", jsonString);
-        GlobalFFOptions.Configure(new FFOptions(){BinaryFolder = AppConfig.FFmpegPath});
+        GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = AppConfig.FFmpegPath });
     }
 }

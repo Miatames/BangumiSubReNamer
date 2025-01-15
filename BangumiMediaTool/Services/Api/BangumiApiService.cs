@@ -18,9 +18,12 @@ public class BangumiApiService
     {
         Instance = this;
 
-        bgmApiClient = new HttpClient();
+        bgmApiClient = new HttpClient(new HttpClientHandler()
+        {
+            ServerCertificateCustomValidationCallback = (_, _, _, _) => true
+        });
         bgmApiClient.DefaultRequestHeaders.Add("Accept", "application/json");
-        bgmApiClient.DefaultRequestHeaders.Add("User-Agent", "BangumiMediaTool/1.0 (https://github.com/Miatames/BangumiMediaTool)");
+        bgmApiClient.DefaultRequestHeaders.Add("User-Agent", "miatames/bangumi-media-tool (https://github.com/Miatames/BangumiMediaTool)");
         bgmApiClient.Timeout = TimeSpan.FromSeconds(10);
 
         tmdbApiClient = new HttpClient();
@@ -42,11 +45,31 @@ public class BangumiApiService
 
         var url = $"https://api.themoviedb.org/3/search/multi?query={Uri.EscapeDataString(keywords)}&include_adult=false&page=1";
 
-        var response = await tmdbApiClient.GetAsync(url);
-        Console.WriteLine("请求: " + url + " : " + response.StatusCode);
+        HttpResponseMessage? response = null;
+        try
+        {
+            response = await tmdbApiClient.GetAsync(url);
+        }
+        catch (Exception e)
+        {
+            Logs.LogError($"{url} : Exception {e}");
+            return (keywords, null);
+        }
+
+        Logs.LogInfo($"请求: {url} : {response.StatusCode}");
         if (!response.IsSuccessStatusCode) return (keywords, null);
 
-        var jsonRoot = JsonSerializer.Deserialize<TmdbApiJson_Search>(await response.Content.ReadAsStringAsync());
+        TmdbApiJson_Search? jsonRoot;
+        try
+        {
+            jsonRoot = JsonSerializer.Deserialize<TmdbApiJson_Search>(await response.Content.ReadAsStringAsync());
+        }
+        catch (Exception e)
+        {
+            Logs.LogError(e.ToString());
+            return (keywords, null);
+        }
+
         var resultTitle = keywords;
         long? resultId = null;
         if (jsonRoot is { results.Count: > 0 })
@@ -84,21 +107,37 @@ public class BangumiApiService
 
         var url = $"{bgmApiUrlBase}/search/subject/{Uri.EscapeDataString(keywords)}?type=2&responseGroup=large&start=0&max_results=25";
 
-        var response = await bgmApiClient.GetAsync(url);
-        Logs.LogInfo("请求: " + url + " : " + response.StatusCode);
+        HttpResponseMessage response;
+        try
+        {
+            response = await bgmApiClient.GetAsync(url);
+        }
+        catch (Exception e)
+        {
+            Logs.LogError($"{url} : Exception {e}");
+            return [];
+        }
+
+        Logs.LogInfo($"请求: {url} : {response.StatusCode}");
         if (!response.IsSuccessStatusCode) return [];
 
         var result = await response.Content.ReadAsStringAsync();
-        // if (result.StartsWith('<')) return [];
 
-        using var document = JsonDocument.Parse(result);
+        JsonDocument? document = null;
+        try
+        {
+            document = JsonDocument.Parse(result);
+        }
+        catch (Exception e)
+        {
+            Logs.LogError(e.ToString());
+            return [];
+        }
+
         var root = document.RootElement;
 
         //请求出错直接返回
-        if (root.TryGetProperty("error", out _))
-        {
-            return [];
-        }
+        if (root.TryGetProperty("error", out _)) return [];
 
         results.Add(result);
 
@@ -119,8 +158,18 @@ public class BangumiApiService
         var dataSubjectsInfos = new List<DataSubjectsInfo>();
         foreach (var r in results)
         {
-            var jsonData = JsonSerializer.Deserialize<BgmApiJson_Search>(r);
-            if (jsonData == null) continue;
+            BgmApiJson_Search? jsonData;
+            try
+            {
+                jsonData = JsonSerializer.Deserialize<BgmApiJson_Search>(r);
+            }
+            catch (Exception e)
+            {
+                Logs.LogError(e.ToString());
+                continue;
+            }
+
+            if(jsonData==null) continue;
             foreach (var item in jsonData.list)
             {
                 var addData = new DataSubjectsInfo
@@ -149,13 +198,23 @@ public class BangumiApiService
     {
         var url = $"{bgmApiUrlBase}/v0/episodes?subject_id={subjectInfo.Id}";
 
-        var response = await bgmApiClient.GetAsync(url);
-        Logs.LogInfo("请求: " + url + " : " + response.StatusCode);
-        if (!response.IsSuccessStatusCode) return [];
+        BgmApiJson_EpisodesInfo? jsonData = null;
 
-        var result = await response.Content.ReadAsStringAsync();
-        var jsonData = JsonSerializer.Deserialize<BgmApiJson_EpisodesInfo>(result);
-        if (jsonData == null) return [];
+        try
+        {
+            var response = await bgmApiClient.GetAsync(url);
+            Logs.LogInfo($"请求: {url} : {response.StatusCode}");
+            if (!response.IsSuccessStatusCode) return [];
+
+            var result = await response.Content.ReadAsStringAsync();
+            jsonData = JsonSerializer.Deserialize<BgmApiJson_EpisodesInfo>(result);
+            if (jsonData == null) return [];
+        }
+        catch (Exception e)
+        {
+            Logs.LogError(e.ToString());
+            return [];
+        }
 
         var dataEpisodesInfos = new List<DataEpisodesInfo>();
         foreach (var item in jsonData.data.Where(item => item.type is 0 or 1)) //只获取正篇和SP

@@ -4,3 +4,4 @@
 /BangumiMediaTool/obj/
 /BangumiMediaTool/BangumiMediaTool.csproj.user
 /BangumiMediaTool/NLog.config
+/BangumiMediaTool/Services/Api/TmdbInfo.cs

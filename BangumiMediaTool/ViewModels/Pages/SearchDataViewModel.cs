@@ -18,7 +18,6 @@ public partial class SearchDataViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private bool _isSearchAllResults = false;
 
     [ObservableProperty] private ObservableCollection<DataEpisodesInfo> _dataEpisodesInfoList = [];
-    // [ObservableProperty] private ObservableCollection<DataEpisodesInfo> _episodesInfoSelectItems = [];
     [ObservableProperty] private Visibility _isEpisodes = Visibility.Hidden;
 
     [ObservableProperty] private string _subjectInfoName = string.Empty;
@@ -26,8 +25,6 @@ public partial class SearchDataViewModel : ObservableObject, INavigationAware
     [ObservableProperty] private string _subjectInfoDate = string.Empty;
     [ObservableProperty] private string _subjectInfoUrl = string.Empty;
     [ObservableProperty] private string _subjectInfoDesc = string.Empty;
-
-    private Dictionary<string, string> resultsDict = new();
 
     public void OnNavigatedTo()
     {
@@ -44,6 +41,7 @@ public partial class SearchDataViewModel : ObservableObject, INavigationAware
     {
         IsEpisodes = Visibility.Hidden;
         DataEpisodesInfoList.Clear();
+        SearchListSelectItem = null;
 
         var main = App.GetService<MainWindowViewModel>();
         main?.SetGlobalProcess(true);
@@ -60,7 +58,6 @@ public partial class SearchDataViewModel : ObservableObject, INavigationAware
         }
         else
         {
-            SearchListSelectItem = null;
             Logs.LogError("搜索无结果");
         }
     }
@@ -122,10 +119,10 @@ public partial class SearchDataViewModel : ObservableObject, INavigationAware
         }
         else
         {
-            if(sender is not ListView listView) return;
+            if (sender is not ListView listView) return;
             var episodesInfoSelectItems = listView.SelectedItems.Cast<DataEpisodesInfo>().ToList();
 
-            if (episodesInfoSelectItems.Count==0)
+            if (episodesInfoSelectItems.Count == 0)
             {
                 nfoPage?.AddToNfoData(DataEpisodesInfoList.ToList());
             }
@@ -134,7 +131,6 @@ public partial class SearchDataViewModel : ObservableObject, INavigationAware
                 nfoPage?.AddToNfoData(episodesInfoSelectItems.ToList());
             }
         }
-
     }
 
     [RelayCommand]

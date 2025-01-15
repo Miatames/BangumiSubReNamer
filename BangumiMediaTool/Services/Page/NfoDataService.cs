@@ -140,7 +140,6 @@ public static class NfoDataService
     /// <param name="fileOperateMode">0:硬链接 1:复制 2:重命名</param>
     public static async Task RunFileOperates(List<DataFilePath> sourceFileList, List<DataFilePath> newFileList, int fileOperateMode)
     {
-        var targetDirs = new List<string>();
         var main = App.GetService<MainWindowViewModel>();
         var count = Math.Min(sourceFileList.Count, newFileList.Count);
 
@@ -151,9 +150,8 @@ public static class NfoDataService
                 if (!File.Exists(sourceFileList[i].FilePath)) continue;
 
                 var targetPath = newFileList[i].FilePath;
-                var targetDirectory = Path.GetDirectoryName((targetPath));
+                var targetDirectory = Path.GetDirectoryName(targetPath);
                 if (targetDirectory == null) continue;
-                targetDirs.AddUnique(targetDirectory);
 
                 if (!Directory.Exists(targetDirectory))
                 {
@@ -169,21 +167,28 @@ public static class NfoDataService
                     }
                 }
 
-                main?.SetGlobalProcess(true, i + 1, count);
-                switch (fileOperateMode)
+                try
                 {
-                    case 0: //硬链接
-                        ExtensionTools.CreateHardLink(newFileList[i].FilePath, sourceFileList[i].FilePath, IntPtr.Zero);
-                        Logs.LogInfo($"硬链接：{newFileList[i].FilePath}");
-                        break;
-                    case 1: //复制
-                        File.Copy(sourceFileList[i].FilePath, newFileList[i].FilePath, true);
-                        Logs.LogInfo($"复制：{newFileList[i].FilePath}");
-                        break;
-                    case 2: //重命名
-                        File.Move(sourceFileList[i].FilePath, newFileList[i].FilePath, true);
-                        Logs.LogInfo($"重命名：{newFileList[i].FilePath}");
-                        break;
+                    main?.SetGlobalProcess(true, i + 1, count);
+                    switch (fileOperateMode)
+                    {
+                        case 0: //硬链接
+                            ExtensionTools.CreateHardLink(newFileList[i].FilePath, sourceFileList[i].FilePath, IntPtr.Zero);
+                            Logs.LogInfo($"硬链接：{newFileList[i].FilePath}");
+                            break;
+                        case 1: //复制
+                            File.Copy(sourceFileList[i].FilePath, newFileList[i].FilePath, true);
+                            Logs.LogInfo($"复制：{newFileList[i].FilePath}");
+                            break;
+                        case 2: //重命名
+                            File.Move(sourceFileList[i].FilePath, newFileList[i].FilePath, true);
+                            Logs.LogInfo($"重命名：{newFileList[i].FilePath}");
+                            break;
+                    }
+                }
+                catch (Exception e)
+                {
+                    Logs.LogError(e.ToString());
                 }
             }
         });

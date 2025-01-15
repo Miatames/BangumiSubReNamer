@@ -132,6 +132,7 @@ public partial class MediaNfoDataViewModel : ObservableObject, INavigationAware,
     {
         var main = App.GetService<MainWindowViewModel>();
         main?.SetGlobalProcess(true);
+
         var newFileList = NfoDataService.CreateNewFileList(SourceFileList.ToList(), NfoDataList.ToList(), CurrentSearchMode, CurrentFileOperateMode);
         await NfoDataService.RunFileOperates(SourceFileList.ToList(), newFileList, CurrentFileOperateMode);
         if (IsAddNfoFile) await NfoDataService.RunCreateNfoFiles(NfoDataList.ToList(), newFileList, CurrentSearchMode,IsAddTmdbId);

@@ -4,6 +4,7 @@ using BangumiMediaTool.Models;
 using BangumiMediaTool.Services.Program;
 using BangumiMediaTool.ViewModels.Windows;
 using FFMpegCore;
+using FFMpegCore.Pipes;
 
 namespace BangumiMediaTool.Services.Page;
 
@@ -116,15 +117,15 @@ public static partial class ReNameFileService
         var count = Math.Min(subtitleFiles.Count, targetPaths.Count);
         if (fileOperateMode == 0)
         {
+            if (!File.Exists(GlobalFFOptions.GetFFMpegBinaryPath()))
+            {
+                Logs.LogError($"未找到FFMpeg执行程序");
+                return;
+            }
+
             for (int i = 0; i < count; i++)
             {
                 main?.SetGlobalProcess(true, i + 1, count);
-                var ext = Path.GetExtension(subtitleFiles[i].FilePath);
-                if (ext != ".ass")
-                {
-                    Logs.LogError($"并非Ass: {subtitleFiles[i].FilePath}");
-                    continue;
-                }
 
                 await ConvertAssFileToSrt(subtitleFiles[i].FilePath, targetPaths[i].FilePath);
             }
@@ -159,6 +160,14 @@ public static partial class ReNameFileService
             return;
         }
 
+        //扩展名非ass时直接转换
+        var ext = Path.GetExtension(assFilePath);
+        if (ext != ".ass")
+        {
+            await FFMpegArguments.FromFileInput(assFilePath).OutputToFile(srtFilePath).ProcessAsynchronously();
+            return;
+        }
+
         var tempFilePath = assFilePath + ".temp";
         if (!File.Exists(tempFilePath))
         {
@@ -168,22 +177,26 @@ public static partial class ReNameFileService
         //读取Ass文件,移除特效标签后保存到临时文件
         await using (var tempFile = new FileStream(tempFilePath, FileMode.Truncate, FileAccess.ReadWrite, FileShare.None))
         {
-            var lines = await File.ReadAllLinesAsync(assFilePath);
             var writer = new StreamWriter(tempFile);
 
             await Task.Run(() =>
             {
-                foreach (var line in lines)
+                using (var reader = new StreamReader(assFilePath))
                 {
-                    if (AssRemoveLineRegex().IsMatch(line)) continue;
-
-                    var newLine = AssEffectsRegex().Replace(line, string.Empty);
-                    if (AssKaraokeRegex().IsMatch(newLine))
+                    while (reader.ReadLine() is { } line)
                     {
-                        newLine = newLine.Replace("Comment: ", "Dialogue: ");
+                        if (AssRemoveLineRegex().IsMatch(line)) continue;
+
+                        var newLine = AssEffectsRegex().Replace(line, string.Empty);
+                        if (AssKaraokeRegex().IsMatch(newLine))
+                        {
+                            newLine = newLine.Replace("Comment: ", "Dialogue: ");
+                        }
+
+                        writer.WriteLine(newLine);
                     }
 
-                    writer.WriteLine(newLine);
+                    reader.Close();
                 }
             });
 
