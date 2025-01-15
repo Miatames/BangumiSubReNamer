@@ -70,7 +70,7 @@ public partial class MainWindow : INavigationWindow, IRecipient<DataSnackbarMess
     {
         snackbarService.Show(message.Title, message.Message, message.ControlAppearance,
             null,
-            TimeSpan.FromSeconds(2));
+            TimeSpan.FromSeconds(message.Seconds));
     }
 
 

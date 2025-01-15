@@ -20,6 +20,6 @@ public static class Logs
     {
         Console.WriteLine(message);
         // log.Error(message);
-        WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("错误", message ?? string.Empty, ControlAppearance.Caution));
+        WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("错误", message ?? string.Empty, ControlAppearance.Caution,60));
     }
 }
