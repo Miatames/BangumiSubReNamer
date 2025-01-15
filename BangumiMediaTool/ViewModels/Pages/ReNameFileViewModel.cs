@@ -5,6 +5,7 @@ using BangumiMediaTool.Services.Page;
 using BangumiMediaTool.Services.Program;
 using BangumiMediaTool.ViewModels.Windows;
 using BangumiMediaTool.Views.Windows;
+using CommunityToolkit.Mvvm.Messaging;
 using GongSolutions.Wpf.DragDrop;
 using NaturalSort.Extension;
 using Wpf.Ui.Controls;
@@ -253,8 +254,16 @@ public partial class ReNameFileViewModel : ObservableObject, INavigationAware, I
         if (CurrentExtension >= 0 && CurrentExtension < SelectExtensions.Count) currentExtensionStr = SelectExtensions[CurrentExtension];
         var list = ReNameFileService.CreateNewFilePaths(SourceFilePaths.ToList(), ShowSubFilePaths.ToList(),
             currentExtensionStr, SelectAddExtension, CurrentFileOperateMode);
-        await ReNameFileService.RunFileOperates(ShowSubFilePaths.ToList(), list, CurrentFileOperateMode);
+        var record = await ReNameFileService.RunFileOperates(ShowSubFilePaths.ToList(), list, CurrentFileOperateMode);
 
         main?.SetGlobalProcess(false);
+
+        if (!string.IsNullOrEmpty(record))
+        {
+            WeakReferenceMessenger.Default.Send(new DataSnackbarMessage(
+                "完成",
+                record,
+                ControlAppearance.Info));
+        }
     }
 }

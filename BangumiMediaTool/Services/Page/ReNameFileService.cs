@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using System.Text.RegularExpressions;
 using BangumiMediaTool.Models;
 using BangumiMediaTool.Services.Program;
@@ -111,16 +112,18 @@ public static partial class ReNameFileService
     /// <param name="subtitleFiles">字幕文件路径</param>
     /// <param name="targetPaths">目标路径</param>
     /// <param name="fileOperateMode">文件操作模式 0:转换为SRT 1:复制 2:重命名</param>
-    public static async Task RunFileOperates(List<DataFilePath> subtitleFiles, List<DataFilePath> targetPaths, int fileOperateMode)
+    public static async Task<string> RunFileOperates(List<DataFilePath> subtitleFiles, List<DataFilePath> targetPaths, int fileOperateMode)
     {
         var main = App.GetService<MainWindowViewModel>();
         var count = Math.Min(subtitleFiles.Count, targetPaths.Count);
+        var recordStr = new StringBuilder();
+
         if (fileOperateMode == 0)
         {
             if (!File.Exists(GlobalFFOptions.GetFFMpegBinaryPath()))
             {
                 Logs.LogError($"未找到FFMpeg执行程序");
-                return;
+                return string.Empty;
             }
 
             for (int i = 0; i < count; i++)
@@ -128,9 +131,10 @@ public static partial class ReNameFileService
                 main?.SetGlobalProcess(true, i + 1, count);
 
                 await ConvertAssFileToSrt(subtitleFiles[i].FilePath, targetPaths[i].FilePath);
+                recordStr.AppendLine(targetPaths[i].FilePath);
             }
 
-            return;
+            return recordStr.ToString();
         }
 
         await Task.Run(() =>
@@ -143,13 +147,16 @@ public static partial class ReNameFileService
                 {
                     case 1:
                         File.Copy(subtitleFiles[i].FilePath, targetPaths[i].FilePath, true);
+                        recordStr.AppendLine(targetPaths[i].FilePath);
                         break;
                     case 2:
                         File.Move(subtitleFiles[i].FilePath, targetPaths[i].FilePath, true);
+                        recordStr.AppendLine(targetPaths[i].FilePath);
                         break;
                 }
             }
         });
+        return recordStr.ToString();
     }
 
     public static async Task ConvertAssFileToSrt(string assFilePath, string srtFilePath)

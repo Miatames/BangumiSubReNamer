@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Text;
 using BangumiMediaTool.Models;
 using BangumiMediaTool.Services.Api;
 using BangumiMediaTool.Services.Program;
@@ -138,10 +139,11 @@ public static class NfoDataService
     /// <param name="sourceFileList">原文件路径</param>
     /// <param name="newFileList">目标路径</param>
     /// <param name="fileOperateMode">0:硬链接 1:复制 2:重命名</param>
-    public static async Task RunFileOperates(List<DataFilePath> sourceFileList, List<DataFilePath> newFileList, int fileOperateMode)
+    public static async Task<string> RunFileOperates(List<DataFilePath> sourceFileList, List<DataFilePath> newFileList, int fileOperateMode)
     {
         var main = App.GetService<MainWindowViewModel>();
         var count = Math.Min(sourceFileList.Count, newFileList.Count);
+        var record = new StringBuilder();
 
         await Task.Run(() =>
         {
@@ -175,14 +177,17 @@ public static class NfoDataService
                         case 0: //硬链接
                             ExtensionTools.CreateHardLink(newFileList[i].FilePath, sourceFileList[i].FilePath, IntPtr.Zero);
                             Logs.LogInfo($"硬链接：{newFileList[i].FilePath}");
+                            record.AppendLine(newFileList[i].FilePath);
                             break;
                         case 1: //复制
                             File.Copy(sourceFileList[i].FilePath, newFileList[i].FilePath, true);
                             Logs.LogInfo($"复制：{newFileList[i].FilePath}");
+                            record.AppendLine(newFileList[i].FilePath);
                             break;
                         case 2: //重命名
                             File.Move(sourceFileList[i].FilePath, newFileList[i].FilePath, true);
                             Logs.LogInfo($"重命名：{newFileList[i].FilePath}");
+                            record.AppendLine(newFileList[i].FilePath);
                             break;
                     }
                 }
@@ -192,6 +197,8 @@ public static class NfoDataService
                 }
             }
         });
+
+        return record.ToString();
     }
 
     /// <summary>

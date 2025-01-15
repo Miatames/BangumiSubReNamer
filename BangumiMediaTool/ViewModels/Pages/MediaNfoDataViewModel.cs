@@ -5,6 +5,7 @@ using BangumiMediaTool.Services.Page;
 using BangumiMediaTool.Services.Program;
 using BangumiMediaTool.ViewModels.Windows;
 using BangumiMediaTool.Views.Windows;
+using CommunityToolkit.Mvvm.Messaging;
 using GongSolutions.Wpf.DragDrop;
 using NaturalSort.Extension;
 using Wpf.Ui.Controls;
@@ -134,13 +135,21 @@ public partial class MediaNfoDataViewModel : ObservableObject, INavigationAware,
         main?.SetGlobalProcess(true);
 
         var newFileList = NfoDataService.CreateNewFileList(SourceFileList.ToList(), NfoDataList.ToList(), CurrentSearchMode, CurrentFileOperateMode);
-        await NfoDataService.RunFileOperates(SourceFileList.ToList(), newFileList, CurrentFileOperateMode);
-        if (IsAddNfoFile) await NfoDataService.RunCreateNfoFiles(NfoDataList.ToList(), newFileList, CurrentSearchMode,IsAddTmdbId);
+        var record = await NfoDataService.RunFileOperates(SourceFileList.ToList(), newFileList, CurrentFileOperateMode);
+        if (IsAddNfoFile) await NfoDataService.RunCreateNfoFiles(NfoDataList.ToList(), newFileList, CurrentSearchMode, IsAddTmdbId);
 
         main?.SetGlobalProcess(false);
 
         //完成后自动添加到重命名文件页面
         App.GetService<ReNameFileViewModel>()?.AddSourceFiles(newFileList);
+
+        if (!string.IsNullOrEmpty(record))
+        {
+            WeakReferenceMessenger.Default.Send(new DataSnackbarMessage(
+                "完成",
+                record,
+                ControlAppearance.Info));
+        }
     }
 
     [RelayCommand]
