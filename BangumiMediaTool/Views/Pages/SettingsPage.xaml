@@ -42,11 +42,19 @@
             <Label Margin="0,10,0,0" Content="FFmpeg文件夹路径:" />
             <ui:TextBox Text="{Binding ViewModel.AppConfig.FFmpegPath}" />
 
-            <ui:Button Content="保存设置"
-                       HorizontalAlignment="Right"
-                       Width="120" Height="32" Margin="0,10"
-                       Appearance="Primary"
-                       Command="{Binding ViewModel.SetConfigCommand}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <ui:Button Content="显示日志"
+                           HorizontalAlignment="Right"
+                           Width="120" Height="32" Margin="30,10"
+                           Appearance="Primary"
+                           Icon="{ui:SymbolIcon Open32}"
+                           Command="{Binding ViewModel.ShowConsoleLogWindowCommand}" />
+                <ui:Button Content="保存设置"
+                           HorizontalAlignment="Right"
+                           Width="120" Height="32" Margin="0,10"
+                           Appearance="Primary"
+                           Command="{Binding ViewModel.SetConfigCommand}" />
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Page>

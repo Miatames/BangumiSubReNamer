@@ -39,13 +39,21 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </None>
         <None Update="NLog.config">
-            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
     </ItemGroup>
 
     <ItemGroup>
         <Resource Include="Assets\wpfui-icon-256.png"/>
         <Resource Include="Assets\wpfui-icon-1024.png"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Page Update="Views\Windows\ConsoleLogWindow.xaml">
+        <Generator>MSBuild:Compile</Generator>
+        <XamlRuntime>Wpf</XamlRuntime>
+        <SubType>Designer</SubType>
+      </Page>
     </ItemGroup>
 <!--
     <ItemGroup>
