@@ -26,10 +26,12 @@ public class GlobalConfig
         GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = AppConfig.FFmpegPath });
     }
 
+    private readonly JsonSerializerOptions defaultWriteOptions = new() { WriteIndented = true };
+
     public void WriteConfig(AppConfig setConfig)
     {
         AppConfig = setConfig;
-        var jsonString = JsonSerializer.Serialize(AppConfig);
+        var jsonString = JsonSerializer.Serialize(AppConfig, defaultWriteOptions);
         File.WriteAllText("config.json", jsonString);
         GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = AppConfig.FFmpegPath });
     }
