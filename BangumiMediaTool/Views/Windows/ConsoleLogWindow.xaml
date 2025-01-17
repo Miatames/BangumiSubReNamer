@@ -21,8 +21,7 @@
     ExtendsContentIntoTitleBar="True"
     WindowBackdropType="Mica"
     WindowCornerPreference="Round"
-    WindowStartupLocation="CenterScreen"
-    ResizeMode="CanMinimize"
+    WindowStartupLocation="Manual"
     mc:Ignorable="d">
 
     <Grid>
@@ -36,7 +35,7 @@
             CloseWindowByDoubleClickOnIcon="False">
         </ui:TitleBar>
         <Grid Margin="10,55,10,10">
-            <nlog:NlogRichTextBox x:Name="logCtrlNlogRichTextBox1"/>
+            <nlog:NlogRichTextBox x:Name="logCtrlNlogRichTextBox1" IsEnabled="False"/>
         </Grid>
     </Grid>
 </ui:FluentWindow>

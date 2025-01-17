@@ -125,9 +125,10 @@
                       Margin="0,5"
                       MinWidth="140"
                       HorizontalAlignment="Right">
-                <ComboBoxItem Content="转换为srt" />
                 <ComboBoxItem Content="复制" />
                 <ComboBoxItem Content="重命名" />
+                <ComboBoxItem Content="转换为srt" />
+                <ComboBoxItem Content="ass字体子集化" />
             </ComboBox>
             <ComboBox x:Name="UI_AddExtensionNameList"
                       ItemsSource="{Binding ViewModel.AddExtensions,Mode=OneWay}"

@@ -257,7 +257,6 @@ public partial class ReNameFileViewModel : ObservableObject, INavigationAware, I
         var record = await ReNameFileService.RunFileOperates(ShowSubFilePaths.ToList(), list, CurrentFileOperateMode);
 
         main?.SetGlobalProcess(false);
-
         if (!string.IsNullOrEmpty(record))
         {
             WeakReferenceMessenger.Default.Send(new DataSnackbarMessage(
