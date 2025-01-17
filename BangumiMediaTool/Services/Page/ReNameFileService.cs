@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System.Diagnostics;
+using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
 using BangumiMediaTool.Models;
@@ -50,14 +51,14 @@ public static partial class ReNameFileService
     /// <param name="subtitleFiles">字幕文件</param>
     /// <param name="selectExtension">筛选的扩展名,不筛选时为空</param>
     /// <param name="addExtension">添加的扩展名</param>
-    /// <param name="fileOperateMode">文件操作模式 0:转换为SRT 1:复制 2:重命名</param>
+    /// <param name="fileOperateMode">文件操作模式 0:复制 1:重命名 2:转换为SRT 3:ASS子集化</param>
     /// <returns></returns>
     public static List<DataFilePath> CreateNewFilePaths(List<DataFilePath> mediaFiles, List<DataFilePath> subtitleFiles,
         string selectExtension, string addExtension, int fileOperateMode)
     {
         var newFiles = new List<DataFilePath>();
 
-        if (mediaFiles.Count == 0 && subtitleFiles.Count > 0 && fileOperateMode == 0)
+        if (mediaFiles.Count == 0 && subtitleFiles.Count > 0 && fileOperateMode == 2)
         {
             foreach (var file in subtitleFiles)
             {
@@ -84,17 +85,13 @@ public static partial class ReNameFileService
             switch (fileOperateMode)
             {
                 case 0:
-                    var folder0 = Path.GetDirectoryName(mediaFile.FilePath) ?? string.Empty;
-                    var fileName0 = Path.GetFileNameWithoutExtension(mediaFile.FileName) + addExtension + ".srt";
-                    newFiles.Add(new DataFilePath(Path.Combine(folder0, fileName0)));
-                    break;
-                case 1:
+                case 3:
                     var folder1 = Path.GetDirectoryName(mediaFile.FilePath) ?? string.Empty;
                     var subExtension1 = Path.GetExtension(subtitleFile.FileName);
                     var fileName1 = Path.GetFileNameWithoutExtension(mediaFile.FileName) + addExtension + subExtension1;
                     newFiles.Add(new DataFilePath(Path.Combine(folder1, fileName1)));
                     break;
-                case 2:
+                case 1:
                     var folder2 = Path.GetDirectoryName(subtitleFile.FilePath) ?? string.Empty;
                     var subExtension2 = Path.GetExtension(subtitleFile.FileName);
                     var fileName2 = Path.GetFileNameWithoutExtension(mediaFile.FileName) + addExtension + subExtension2;
@@ -111,14 +108,14 @@ public static partial class ReNameFileService
     /// </summary>
     /// <param name="subtitleFiles">字幕文件路径</param>
     /// <param name="targetPaths">目标路径</param>
-    /// <param name="fileOperateMode">文件操作模式 0:转换为SRT 1:复制 2:重命名</param>
+    /// <param name="fileOperateMode">文件操作模式 0:复制 1:重命名 2:转换为SRT 3:字体子集化</param>
     public static async Task<string> RunFileOperates(List<DataFilePath> subtitleFiles, List<DataFilePath> targetPaths, int fileOperateMode)
     {
         var main = App.GetService<MainWindowViewModel>();
         var count = Math.Min(subtitleFiles.Count, targetPaths.Count);
         var recordStr = new StringBuilder();
 
-        if (fileOperateMode == 0)
+        if (fileOperateMode == 2)
         {
             if (!File.Exists(GlobalFFOptions.GetFFMpegBinaryPath()))
             {
@@ -132,10 +129,31 @@ public static partial class ReNameFileService
 
                 await ConvertAssFileToSrt(subtitleFiles[i].FilePath, targetPaths[i].FilePath);
                 recordStr.AppendLine(targetPaths[i].FilePath);
+                Logs.LogInfo($"转换为srt：{subtitleFiles[i].FilePath} >> {targetPaths[i].FilePath}");
             }
 
             return recordStr.ToString();
         }
+
+        /*if (fileOperateMode == 3)
+        {
+            if (!File.Exists(GlobalConfig.Instance.AppConfig.AssFontsExePath))
+            {
+                Logs.LogError($"未找到assfonts.exe执行程序");
+                return string.Empty;
+            }
+
+            for (int i = 0; i < count; i++)
+            {
+                main?.SetGlobalProcess(true, i + 1, count);
+
+                await RunAssFonts(subtitleFiles[i], targetPaths[i]);
+                recordStr.AppendLine(targetPaths[i].FilePath);
+                Logs.LogInfo($"ass字体子集化：{subtitleFiles[i].FilePath} >> {targetPaths[i].FilePath}");
+            }
+
+            return recordStr.ToString();
+        }*/
 
         await Task.Run(() =>
         {
@@ -145,13 +163,15 @@ public static partial class ReNameFileService
 
                 switch (fileOperateMode)
                 {
-                    case 1:
+                    case 0:
                         File.Copy(subtitleFiles[i].FilePath, targetPaths[i].FilePath, true);
                         recordStr.AppendLine(targetPaths[i].FilePath);
+                        Logs.LogInfo($"复制：{subtitleFiles[i].FilePath} >> {targetPaths[i].FilePath}");
                         break;
-                    case 2:
+                    case 1:
                         File.Move(subtitleFiles[i].FilePath, targetPaths[i].FilePath, true);
                         recordStr.AppendLine(targetPaths[i].FilePath);
+                        Logs.LogInfo($"重命名：{subtitleFiles[i].FilePath} >> {targetPaths[i].FilePath}");
                         break;
                 }
             }
@@ -159,6 +179,11 @@ public static partial class ReNameFileService
         return recordStr.ToString();
     }
 
+    /// <summary>
+    /// 转换Ass到Srt （非Ass直接转换，Ass先去除特效后转换）
+    /// </summary>
+    /// <param name="assFilePath">Ass路径</param>
+    /// <param name="srtFilePath">输出Srt路径</param>
     public static async Task ConvertAssFileToSrt(string assFilePath, string srtFilePath)
     {
         if (!File.Exists(assFilePath))
@@ -220,6 +245,71 @@ public static partial class ReNameFileService
         }
     }
 
+    /*/// <summary>
+    /// 使用assfonts进行子集化
+    /// </summary>
+    /// <param name="subtitleFile">原文件</param>
+    /// <param name="targetPath">目标路径</param>
+    public static async Task RunAssFonts(DataFilePath subtitleFile, DataFilePath targetPath)
+    {
+        var extension = Path.GetExtension(subtitleFile.FileName);
+        if (extension != ".ass")
+        {
+            Logs.LogInfo($"{subtitleFile.FileName} 非ass文件，跳过转换");
+            return;
+        }
+
+        var wordDir = Path.GetDirectoryName(subtitleFile.FilePath);
+        if (string.IsNullOrEmpty(wordDir))
+        {
+            Logs.LogInfo($"{subtitleFile.FilePath} 目录错误，跳过转换");
+            return;
+        }
+
+        using (var process = new Process())
+        {
+            process.StartInfo.FileName = "cmd.exe";
+            process.StartInfo.UseShellExecute = false;
+            process.StartInfo.RedirectStandardInput = true;
+            process.StartInfo.RedirectStandardOutput = true;
+            process.StartInfo.RedirectStandardError = true;
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WorkingDirectory = wordDir;
+            process.Start();
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.StandardInput.AutoFlush = true;
+            process.OutputDataReceived += (o, e) => { Logs.LogInfo(e.Data); };
+            process.ErrorDataReceived += (o, e) => { Logs.LogInfo(e.Data); };
+            var command = $"""{GlobalConfig.Instance.AppConfig.AssFontsExePath} -i "{subtitleFile.FilePath}"&exit""";
+            Logs.LogInfo(command);
+            await process.StandardInput.WriteLineAsync(command);
+            await process.WaitForExitAsync();
+            process.Close();
+        }
+
+        var newFilePath = subtitleFile.FilePath.Replace(".ass", ".assfonts.ass");
+        if (!File.Exists(newFilePath))
+        {
+            Logs.LogInfo($"{newFilePath} 未找到转换后文件");
+            return;
+        }
+
+        var tempDir = Path.Combine(wordDir, Path.GetFileNameWithoutExtension(subtitleFile.FileName) + "_subsetted");
+        if (Directory.Exists(tempDir))
+        {
+            Logs.LogInfo($"{tempDir} 删除临时文件夹");
+            Directory.Delete(tempDir, true);
+        }
+
+        await Task.Run(() =>
+        {
+            File.Move(newFilePath,targetPath.FilePath);
+        });
+    }*/
+
+    #region Regex
+
     //匹配特效标签
     [GeneratedRegex("{[^}]+}")]
     private static partial Regex AssEffectsRegex();
@@ -231,4 +321,6 @@ public static partial class ReNameFileService
     //匹配特效歌词
     [GeneratedRegex("Comment: .*,karaoke,.*")]
     private static partial Regex AssKaraokeRegex();
+
+    #endregion
 }

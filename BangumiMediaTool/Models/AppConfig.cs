@@ -34,4 +34,7 @@ public class AppConfig : ObservableObject
 
     //FFmpeg文件夹路径
     public string FFmpegPath { get; set; } = string.Empty;
+
+    /*//assfonts.exe路径
+    public string AssFontsExePath {get; set;} = string.Empty;*/
 }
