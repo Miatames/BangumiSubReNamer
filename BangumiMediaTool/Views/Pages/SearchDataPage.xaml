@@ -120,10 +120,10 @@
                                        Command="{Binding ViewModel.AddToReNameCommand}"
                                        Icon="{ui:SymbolIcon AddSquare24}"
                                        CommandParameter="{Binding ElementName=UI_EpisodesInfoList}" />
-                            <!--<ui:Button Width="140" Height="30" Appearance="Primary" Margin="5"
+                            <ui:Button Width="140" Height="30" Appearance="Primary" Margin="5"
                                        Content="添加到Rss" HorizontalAlignment="Right"
                                        Command="{Binding ViewModel.AddToRssCommand}"
-                                       Icon="{ui:SymbolIcon Rss24}" />-->
+                                       Icon="{ui:SymbolIcon Rss24}" />
                         </StackPanel>
                         <StackPanel Grid.Row="1" Orientation="Horizontal">
                             <ui:Button Width="120" Height="30" Appearance="Primary" Margin="5"
