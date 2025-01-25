@@ -8,6 +8,7 @@ using BangumiMediaTool.ViewModels.Pages;
 using BangumiMediaTool.ViewModels.Windows;
 using BangumiMediaTool.Views.Pages;
 using BangumiMediaTool.Views.Windows;
+using BangumiSubReNamer.Services;
 using CommunityToolkit.Mvvm.Messaging;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -59,6 +60,8 @@ public partial class App
             services.AddSingleton<SearchDataPage>();
             services.AddSingleton<ReNameFileViewModel>();
             services.AddSingleton<ReNameFilePage>();
+            services.AddSingleton<QbtRssViewModel>();
+            services.AddSingleton<QbtRssPage>();
             services.AddSingleton<SettingsViewModel>();
             services.AddSingleton<SettingsPage>();
         }).Build();
@@ -83,6 +86,7 @@ public partial class App
 
         _ = new GlobalConfig();
         _ = new BangumiApiService();
+        _ = new QbtApiService();
     }
 
     /// <summary>

@@ -5,6 +5,7 @@ using BangumiMediaTool.Services.Api;
 using BangumiMediaTool.Services.Program;
 using BangumiMediaTool.ViewModels.Windows;
 using BangumiMediaTool.Views.Windows;
+using CommunityToolkit.Mvvm.Messaging;
 using Wpf.Ui.Controls;
 
 namespace BangumiMediaTool.ViewModels.Pages;
@@ -134,5 +135,12 @@ public partial class SearchDataViewModel : ObservableObject, INavigationAware
     }
 
     [RelayCommand]
-    private void OnAddToRss() { }
+    private void OnAddToRss()
+    {
+        var rss = App.GetService<QbtRssViewModel>();
+        if (rss == null || SearchListSelectItem == null) return;
+        rss.AddRssData(SearchListSelectItem);
+
+        WeakReferenceMessenger.Default.Send(new DataSnackbarMessage("添加到RSS", SearchListSelectItem.NameCn, ControlAppearance.Success));
+    }
 }

@@ -30,6 +30,12 @@ public partial class MainWindowViewModel : ObservableObject
             Icon = new SymbolIcon { Symbol = SymbolRegular.Rename24 },
             TargetPageType = typeof(Views.Pages.ReNameFilePage)
         },
+        new NavigationViewItem()
+        {
+            Content = "RSS订阅",
+            Icon = new SymbolIcon { Symbol = SymbolRegular.Rss24 },
+            TargetPageType = typeof(Views.Pages.QbtRssPage)
+        },
     };
 
     [ObservableProperty] private ObservableCollection<object> _footerMenuItems = new()
