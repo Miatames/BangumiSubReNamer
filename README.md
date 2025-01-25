@@ -1,8 +1,9 @@
 ### 功能
-
-使用[TMDBApi](https://developer.themoviedb.org/docs/getting-started)和[BangumiApi](https://github.com/bangumi/api)获取视频信息并生成nfo文件：[jellyfin-plugin-bangumi](https://github.com/kookxiang/jellyfin-plugin-bangumi)  
+[Wiki](https://github.com/Miatames/BangumiMediaTool/wiki/%E7%A8%8B%E5%BA%8F%E7%9A%84%E7%AE%80%E5%8D%95%E7%94%A8%E6%B3%95%E5%92%8C%E9%83%A8%E5%88%86%E8%AF%B4%E6%98%8E)  
+  
+使用[TMDBApi](https://developer.themoviedb.org/docs/getting-started)和[BangumiApi](https://github.com/bangumi/api)获取视频信息并生成nfo文件  
 批量重命名字幕文件  
-ass字幕转srt（需要配置ffmpeg路径）（转换将移除fx行和特效标签，可能会导致部分字幕被删除，如带特效的OPED歌词）  
+ass字幕转srt（需要配置ffmpeg路径）（详见Wiki说明）  
 
 ### 测试环境：
 Win11  
