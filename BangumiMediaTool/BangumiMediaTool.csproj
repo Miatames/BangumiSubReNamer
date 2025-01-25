@@ -36,7 +36,7 @@
         <None Remove="Assets\wpfui-icon-256.png"/>
         <None Remove="Assets\wpfui-icon-1024.png"/>
         <None Update="config.json">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToOutputDirectory>Never</CopyToOutputDirectory>
         </None>
         <None Update="NLog.config">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>

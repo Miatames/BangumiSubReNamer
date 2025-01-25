@@ -20,10 +20,35 @@ public class GlobalConfig
 
     public void ReadConfig()
     {
-        var jsonString = File.ReadAllText("config.json");
-        AppConfig = JsonSerializer.Deserialize<AppConfig>(jsonString) ?? new AppConfig();
-        Logs.LogInfo(jsonString);
-        GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = AppConfig.FFmpegPath });
+        if (File.Exists("config.json"))
+        {
+            Logs.LogInfo("读取配置");
+
+            var jsonString = File.ReadAllText("config.json");
+            AppConfig = JsonSerializer.Deserialize<AppConfig>(jsonString) ?? new AppConfig();
+            Logs.LogInfo(jsonString);
+            GlobalFFOptions.Configure(new FFOptions() { BinaryFolder = AppConfig.FFmpegPath });
+        }
+        else
+        {
+            Logs.LogInfo("未找到配置文件，生成默认配置");
+
+            var config = new AppConfig
+            {
+                RegexMatchSubtitleFiles = ".ass|.srt",
+                RegexRemoveSubtitleFiles = @"\[|\]|\(|\)|[\u4e00-\u9fa5]",
+                RegexMatchMediaFiles = ".mp4|.mkv|.flv",
+                DefaultAddSubtitleFilesExtensions = "|.chs|.cht",
+                DefaultHardLinkPath = "Media",
+                CreateFolderNameTemplate = "{{SubjectNameCn}} ({{Year}})",
+                CreateBangumiFileNameTemplate = "{{SubjectNameCn}} - {{EpisodesSort}} - {{EpisodeNameCn}} - {{SourceFileName}}",
+                CreateMovieFileNameTemplate = "{{SourceFileName}}",
+                QbtWebServerUrl = "http://127.0.0.1:8080/",
+                QbtDefaultDownloadPath = "G:\\Media",
+                FFmpegPath = ""
+            };
+            WriteConfig(config);
+        }
     }
 
     private readonly JsonSerializerOptions defaultWriteOptions = new() { WriteIndented = true };
