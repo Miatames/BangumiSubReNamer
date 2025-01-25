@@ -15,5 +15,5 @@ JetBrains Rider 2024.3
 [gong-wpf-dragdrop](https://github.com/punker76/gong-wpf-dragdrop)  
 [fluid](https://github.com/sebastienros/fluid)  
 [FFMpegCore](https://github.com/rosenbjerg/FFMpegCore)  
-[NaturalSort.Extension](https://github.com/tompazourek/NaturalSort.Extension)
+[NaturalSort.Extension](https://github.com/tompazourek/NaturalSort.Extension)  
 [NLog.WPF](https://github.com/limumu1997/NLog.WPF)  
