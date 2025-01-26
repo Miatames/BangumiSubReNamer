@@ -112,7 +112,6 @@ public partial class ReNameFileViewModel : ObservableObject, INavigationAware, I
     /// <param name="files">文件列表</param>
     public void AddSourceFiles(List<DataFilePath> files)
     {
-        OnClearAll();
         SourceFilePaths = new ObservableCollection<DataFilePath>(files);
     }
 
