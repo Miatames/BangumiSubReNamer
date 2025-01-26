@@ -67,7 +67,7 @@ public static partial class ReNameFileService
 
                 if (string.IsNullOrEmpty(selectExtension))
                 {
-                    selectExtension = file.FileName.GetExtensionName(GlobalConfig.Instance.AppConfig.RegexMatchSubtitleFiles);
+                    selectExtension = file.FileName.GetExtensionName(GlobalConfig.Instance.AppConfig.RegexRemoveSubtitleFiles);
                 }
 
                 var fileNameWithoutExtension = file.FilePath.Replace(selectExtension, string.Empty);

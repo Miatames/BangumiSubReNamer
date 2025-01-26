@@ -93,7 +93,7 @@ public partial class ReNameFileViewModel : ObservableObject, INavigationAware, I
     /// <param name="files">文件列表</param>
     public void OnDropSubFiles(List<DataFilePath> files)
     {
-        var regexSubEx = GlobalConfig.Instance.AppConfig.RegexMatchSubtitleFiles;
+        var regexSubEx = GlobalConfig.Instance.AppConfig.RegexRemoveSubtitleFiles;
 
         foreach (var file in files)
         {
