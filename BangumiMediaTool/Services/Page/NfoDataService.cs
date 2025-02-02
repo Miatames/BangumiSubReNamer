@@ -114,16 +114,24 @@ public static class NfoDataService
             {
                 case 0:
                     newName = CreateFileService.BangumiNewFileName(info, sourceName, padLeft);
-                    newPath = Path.Combine(
-                        targetFolder,
-                        CreateFileService.NewFolderName(info),
-                        info.Type == 0 ? "Season 1" : "SP").RemoveInvalidPathNameChar();
+                    newPath = fileOperateMode switch
+                    {
+                        0 or 1 => Path.Combine(targetFolder, CreateFileService.NewFolderName(info), info.Type == 0 ? "Season 1" : "SP")
+                            .RemoveInvalidPathNameChar(),
+                        2 => targetFolder,
+                        _ => newPath
+                    };
                     break;
                 case 1:
                     newName = CreateFileService.MovieNewFileName(info, sourceName);
-                    newPath = Path.Combine(
-                        targetFolder,
-                        CreateFileService.NewFolderName(info)).RemoveInvalidPathNameChar();
+                    newPath = fileOperateMode switch
+                    {
+                        0 or 1 => Path.Combine(
+                            targetFolder,
+                            CreateFileService.NewFolderName(info)).RemoveInvalidPathNameChar(),
+                        2 => targetFolder,
+                        _ => newPath
+                    };
                     break;
             }
 
