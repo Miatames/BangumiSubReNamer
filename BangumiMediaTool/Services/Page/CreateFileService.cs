@@ -99,6 +99,7 @@ public static class CreateFileService
             EpisodeNameCn = info.NameCn,
             Year = info.Year,
             SourceFileName = sourceFileName
+            SourceFileName = Path.GetFileNameWithoutExtension(sourceFileName.FileName),
         };
 
         var fileNameParser = new FluidParser();
@@ -106,12 +107,7 @@ public static class CreateFileService
         {
             var context = new TemplateContext(data);
 
-            fileName = template.Render(context);
-
-            if (!templateFileName.Contains("SourceFileName"))
-            {
-                fileName = fileName + extensionName;
-            }
+            fileName = template.Render(context) + extensionName;
         }
 
         return fileName.RemoveInvalidFileNameChar();
