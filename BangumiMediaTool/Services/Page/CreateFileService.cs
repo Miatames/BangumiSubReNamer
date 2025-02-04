@@ -44,11 +44,12 @@ public static class CreateFileService
     /// </summary>
     /// <param name="info">元数据</param>
     /// <param name="sourceFileName">源文件名</param>
+    /// <param name="specialText"></param>
     /// <param name="padLeft">剧集编号左侧填0的数量</param>
     /// <returns></returns>
-    public static string BangumiNewFileName(DataEpisodesInfo info, string sourceFileName, int padLeft)
+    public static string BangumiNewFileName(DataEpisodesInfo info, DataFilePath sourceFileName, string specialText, int padLeft)
     {
-        var fileName = sourceFileName;
+        var fileName = sourceFileName.FileName;
         var extensionName = Path.GetExtension(fileName);
         var templateFileName = GlobalConfig.Instance.AppConfig.CreateBangumiFileNameTemplate;
         if (padLeft < 2) padLeft = 2;
@@ -63,7 +64,9 @@ public static class CreateFileService
             EpisodeNameCn = info.NameCn,
             EpisodesSort = (info.Type == 0 ? "S01E" : "S00E") + info.Sort.ToString().PadLeft(padLeft, '0'),
             Year = info.Year,
-            SourceFileName = Path.GetFileNameWithoutExtension(sourceFileName)
+            SourceFileName = Path.GetFileNameWithoutExtension(sourceFileName.FileName),
+            SourceFolderName = Path.GetFileName(Path.GetDirectoryName(sourceFileName.FilePath)),
+            SpecialText = specialText,
         };
 
         var fileNameParser = new FluidParser();
@@ -82,10 +85,11 @@ public static class CreateFileService
     /// </summary>
     /// <param name="info">元数据</param>
     /// <param name="sourceFileName">源文件名</param>
+    /// <param name="specialText"></param>
     /// <returns></returns>
-    public static string MovieNewFileName(DataEpisodesInfo info, string sourceFileName)
+    public static string MovieNewFileName(DataEpisodesInfo info, DataFilePath sourceFileName, string specialText)
     {
-        var fileName = sourceFileName;
+        var fileName = sourceFileName.FileName;
         var extensionName = Path.GetExtension(fileName);
         var templateFileName = GlobalConfig.Instance.AppConfig.CreateMovieFileNameTemplate;
 
@@ -98,8 +102,9 @@ public static class CreateFileService
             EpisodeName = info.Name,
             EpisodeNameCn = info.NameCn,
             Year = info.Year,
-            SourceFileName = sourceFileName
             SourceFileName = Path.GetFileNameWithoutExtension(sourceFileName.FileName),
+            SourceFolderName = Path.GetFileName(Path.GetDirectoryName(sourceFileName.FilePath)),
+            SpecialText = specialText,
         };
 
         var fileNameParser = new FluidParser();
@@ -130,7 +135,7 @@ public static class CreateFileService
         }
         catch (Exception e)
         {
-           Logs.LogError(e.ToString());
+            Logs.LogError(e.ToString());
         }
     }
 }

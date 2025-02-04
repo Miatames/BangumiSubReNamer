@@ -73,10 +73,11 @@ public static class NfoDataService
     /// <param name="infoList">元数据列表</param>
     /// <param name="searchMode">搜索模式 0:剧集 1:电影</param>
     /// <param name="fileOperateMode">文件操作模式 0:硬链接 1:复制 2:重命名</param>
+    /// <param name="specialText"></param>
     /// <returns></returns>
     public static List<DataFilePath> CreateNewFileList(
         List<DataFilePath> sourceFileList, List<DataEpisodesInfo> infoList,
-        int searchMode, int fileOperateMode)
+        int searchMode, int fileOperateMode, string specialText)
     {
         //集数补零
         var padLeft = Math.Min(sourceFileList.Count, infoList.Count).ToString().Length;
@@ -113,7 +114,7 @@ public static class NfoDataService
             switch (searchMode)
             {
                 case 0:
-                    newName = CreateFileService.BangumiNewFileName(info, sourceName, padLeft);
+                    newName = CreateFileService.BangumiNewFileName(info, sourceFileList[i], specialText, padLeft);
                     newPath = fileOperateMode switch
                     {
                         0 or 1 => Path.Combine(targetFolder, CreateFileService.NewFolderName(info), info.Type == 0 ? "Season 1" : "SP")
@@ -123,7 +124,7 @@ public static class NfoDataService
                     };
                     break;
                 case 1:
-                    newName = CreateFileService.MovieNewFileName(info, sourceName);
+                    newName = CreateFileService.MovieNewFileName(info, sourceFileList[i], specialText);
                     newPath = fileOperateMode switch
                     {
                         0 or 1 => Path.Combine(

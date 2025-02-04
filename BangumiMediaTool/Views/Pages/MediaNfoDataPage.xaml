@@ -125,6 +125,11 @@
                     Orientation="Vertical"
                     VerticalAlignment="Bottom"
                     Margin="5">
+            <ui:TextBox x:Name="UI_SpecialText"
+                        Margin="0,5"
+                        Width="145" Height="35"
+                        Text="{Binding ViewModel.SpecialText}"
+                        PlaceholderText="{}{{SpecialText}}"/>
             <CheckBox x:Name="UI_IsAddNfoFile"
                       Content="生成元数据文件"
                       HorizontalAlignment="Right"

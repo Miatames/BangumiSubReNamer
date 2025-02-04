@@ -21,6 +21,7 @@ public partial class MediaNfoDataViewModel : ObservableObject, INavigationAware,
     [ObservableProperty] private bool _isAddTmdbId = true;
     [ObservableProperty] private int _currentSearchMode = 0;
     [ObservableProperty] private int _currentFileOperateMode = 0;
+    [ObservableProperty] private string _specialText = string.Empty;
 
     public void OnNavigatedTo() { }
     public void OnNavigatedFrom() { }
@@ -112,7 +113,7 @@ public partial class MediaNfoDataViewModel : ObservableObject, INavigationAware,
     [RelayCommand]
     private void OnNavigateToPreviewWindow()
     {
-        var list = NfoDataService.CreateNewFileList(SourceFileList.ToList(), NfoDataList.ToList(), CurrentSearchMode, CurrentFileOperateMode);
+        var list = NfoDataService.CreateNewFileList(SourceFileList.ToList(), NfoDataList.ToList(), CurrentSearchMode, CurrentFileOperateMode, SpecialText);
         var window = new FilePreviewWindow(new FilePreviewWindowViewModel(list))
         {
             Owner = App.GetService<MainWindow>(),
@@ -126,6 +127,7 @@ public partial class MediaNfoDataViewModel : ObservableObject, INavigationAware,
     {
         SourceFileList.Clear();
         NfoDataList.Clear();
+        SpecialText = string.Empty;
     }
 
     [RelayCommand]
@@ -134,7 +136,8 @@ public partial class MediaNfoDataViewModel : ObservableObject, INavigationAware,
         var main = App.GetService<MainWindowViewModel>();
         main?.SetGlobalProcess(true);
 
-        var newFileList = NfoDataService.CreateNewFileList(SourceFileList.ToList(), NfoDataList.ToList(), CurrentSearchMode, CurrentFileOperateMode);
+        var newFileList =
+            NfoDataService.CreateNewFileList(SourceFileList.ToList(), NfoDataList.ToList(), CurrentSearchMode, CurrentFileOperateMode, SpecialText);
         var record = await NfoDataService.RunFileOperates(SourceFileList.ToList(), newFileList, CurrentFileOperateMode);
         if (IsAddNfoFile) await NfoDataService.RunCreateNfoFiles(NfoDataList.ToList(), newFileList, CurrentSearchMode, IsAddTmdbId);
 
