@@ -275,8 +275,8 @@ public static class NfoDataService
                         {
                             bangumiid = info.SubjectId.ToString(),
                             tmdbid = string.Empty,
-                            title = info.SubjectName,
-                            originaltitle = info.SubjectNameCn,
+                            title = info.SubjectNameCn,
+                            originaltitle = info.SubjectName,
                             year = info.Year
                         };
                         CreateFileService.CreateNfoFromData(nfoData, epNfoPath);
