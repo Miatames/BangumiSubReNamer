@@ -1,4 +1,5 @@
-﻿using System.Net.Http;
+﻿using System.Net;
+using System.Net.Http;
 using System.Text.Json;
 using BangumiMediaTool.Models;
 using BangumiMediaTool.Services.Program;
@@ -139,7 +140,7 @@ public class BangumiApiService
         //请求出错直接返回
         if (root.TryGetProperty("error", out _)) return [];
 
-        results.Add(result);
+        results.Add(WebUtility.HtmlDecode(result));
 
         if (getAllResults && root.TryGetProperty("results", out JsonElement maxCount) && maxCount.GetInt32() >= 25)
         {
@@ -151,7 +152,7 @@ public class BangumiApiService
                 if (!responseLoop.IsSuccessStatusCode) continue;
 
                 var resultLoop = await responseLoop.Content.ReadAsStringAsync();
-                results.Add(resultLoop);
+                results.Add(WebUtility.HtmlDecode(resultLoop));
             }
         }
 
@@ -169,7 +170,7 @@ public class BangumiApiService
                 continue;
             }
 
-            if(jsonData==null) continue;
+            if (jsonData == null) continue;
             foreach (var item in jsonData.list)
             {
                 var addData = new DataSubjectsInfo
@@ -207,7 +208,7 @@ public class BangumiApiService
             if (!response.IsSuccessStatusCode) return [];
 
             var result = await response.Content.ReadAsStringAsync();
-            jsonData = JsonSerializer.Deserialize<BgmApiJson_EpisodesInfo>(result);
+            jsonData = JsonSerializer.Deserialize<BgmApiJson_EpisodesInfo>(WebUtility.HtmlDecode(result));
             if (jsonData == null) return [];
         }
         catch (Exception e)
