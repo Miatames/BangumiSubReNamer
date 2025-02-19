@@ -151,6 +151,7 @@
                 <ComboBoxItem Content="硬链接" />
                 <ComboBoxItem Content="复制" />
                 <ComboBoxItem Content="重命名" />
+                <ComboBoxItem Content="仅生成元数据" />
             </ComboBox>
             <ui:Button x:Name="UI_ClearButton"
                        Content="清除"

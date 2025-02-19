@@ -72,7 +72,7 @@ public static class NfoDataService
     /// <param name="sourceFileList">源文件列表</param>
     /// <param name="infoList">元数据列表</param>
     /// <param name="searchMode">搜索模式 0:剧集 1:电影</param>
-    /// <param name="fileOperateMode">文件操作模式 0:硬链接 1:复制 2:重命名</param>
+    /// <param name="fileOperateMode">文件操作模式 0:硬链接 1:复制 2:重命名 3:仅生成元数据</param>
     /// <param name="specialText"></param>
     /// <returns></returns>
     public static List<DataFilePath> CreateNewFileList(
@@ -99,7 +99,7 @@ public static class NfoDataService
             //重命名使用原文件夹，其他使用配置中的文件夹
             var targetFolder = fileOperateMode switch
             {
-                2 => Path.GetDirectoryName(sourcePath),
+                2 or 3 => Path.GetDirectoryName(sourcePath),
                 _ => Path.Combine(rootPath, GlobalConfig.Instance.AppConfig.DefaultHardLinkPath)
             };
             if (string.IsNullOrEmpty(targetFolder))
@@ -114,23 +114,31 @@ public static class NfoDataService
             switch (searchMode)
             {
                 case 0:
-                    newName = CreateFileService.BangumiNewFileName(info, sourceFileList[i], specialText, padLeft);
+                    newName = fileOperateMode switch
+                    {
+                        3 => sourceFileList[i].FileName,
+                        _ => CreateFileService.BangumiNewFileName(info, sourceFileList[i], specialText, padLeft)
+                    };
                     newPath = fileOperateMode switch
                     {
                         0 or 1 => Path.Combine(targetFolder, CreateFileService.NewFolderName(info), info.Type == 0 ? "Season 1" : "SP")
                             .RemoveInvalidPathNameChar(),
-                        2 => targetFolder,
+                        2 or 3 => targetFolder,
                         _ => newPath
                     };
                     break;
                 case 1:
-                    newName = CreateFileService.MovieNewFileName(info, sourceFileList[i], specialText);
+                    newName = fileOperateMode switch
+                    {
+                        3 => sourceFileList[i].FileName,
+                        _ => CreateFileService.MovieNewFileName(info, sourceFileList[i], specialText)
+                    };
                     newPath = fileOperateMode switch
                     {
                         0 or 1 => Path.Combine(
                             targetFolder,
                             CreateFileService.NewFolderName(info)).RemoveInvalidPathNameChar(),
-                        2 => targetFolder,
+                        2 or 3 => targetFolder,
                         _ => newPath
                     };
                     break;
@@ -147,7 +155,7 @@ public static class NfoDataService
     /// </summary>
     /// <param name="sourceFileList">原文件路径</param>
     /// <param name="newFileList">目标路径</param>
-    /// <param name="fileOperateMode">0:硬链接 1:复制 2:重命名</param>
+    /// <param name="fileOperateMode">0:硬链接 1:复制 2:重命名 3:仅生成元数据</param>
     public static async Task<string> RunFileOperates(List<DataFilePath> sourceFileList, List<DataFilePath> newFileList, int fileOperateMode)
     {
         var main = App.GetService<MainWindowViewModel>();
@@ -196,6 +204,9 @@ public static class NfoDataService
                         case 2: //重命名
                             File.Move(sourceFileList[i].FilePath, newFileList[i].FilePath, true);
                             Logs.LogInfo($"重命名：{newFileList[i].FilePath}");
+                            record.AppendLine(newFileList[i].FilePath);
+                            break;
+                        case 3: //仅生成元数据
                             record.AppendLine(newFileList[i].FilePath);
                             break;
                     }
